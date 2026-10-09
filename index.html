@@ -1,0 +1,1963 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FFFAF1">
+<title>Tabet-ai（タベタイ）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&amp;family=Zen+Maru+Gothic:wght@500;700;900&amp;display=swap" rel="stylesheet">
+<style>
+body { margin: 0 }
+sc-if, sc-for { display: contents }
+button { font: inherit; color: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent }
+button:focus-visible { outline: 3px solid #2E2219; outline-offset: 2px }
+input:focus { outline: none }
+.inp:focus-within { box-shadow: 0 0 0 3px #2E2219 }
+.sc { scrollbar-width: none }
+.sc::-webkit-scrollbar { display: none }
+.ic { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round }
+.nd { fill: none; stroke: #FBE3A6; stroke-width: 3.2; stroke-linecap: round }
+.rd { fill: none; stroke: #FFFFFF; stroke-width: 10; stroke-linecap: round }
+.rd2 { fill: none; stroke: #FFFFFF; stroke-width: 5; stroke-linecap: round }
+.rise { animation: rise .35s ease-out both }
+.td { animation: td 1s ease-in-out infinite }
+.td2 { animation-delay: .15s }
+.td3 { animation-delay: .3s }
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px) }
+  to { opacity: 1; transform: none }
+}
+@keyframes td {
+  0%, 100% { opacity: .3; transform: translateY(0) }
+  50% { opacity: 1; transform: translateY(-3px) }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rise, .td { animation: none }
+}
+
+html, body { height: 100%; }
+body { margin: 0; background: #FFFAF1; -webkit-text-size-adjust: 100%; overscroll-behavior: none; }
+#app { height: 100%; }
+.app { width: 100%; height: 100vh; height: 100dvh; padding-bottom: env(safe-area-inset-bottom); }
+@media (min-width: 500px) {
+  body { background: #EFE4D3; }
+  #app { display: flex; align-items: center; justify-content: center; }
+  .app { width: 390px; height: min(844px, calc(100vh - 32px)); height: min(844px, calc(100dvh - 32px)); padding-bottom: 0; border-radius: 36px; box-shadow: 0 24px 60px rgba(46, 34, 25, 0.18); }
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<template id="tpl">
+
+<div class="app" style="box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; position: relative; background: #FFFAF1; color: #2E2219; font-family: 'Zen Kaku Gothic New', 'Hiragino Sans', 'Yu Gothic', sans-serif; font-size: 15px; line-height: 1.5">
+
+<div style="height: 52px; flex: none; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 0 6px 0 16px">
+  <div style="width: 32px; height: 32px; flex: none; border-radius: 12px; background: #F28A3C; color: #2E2219; display: flex; align-items: center; justify-content: center">
+    <svg class="ic" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 11h16a8 8 0 0 1-16 0z"></path><path d="M9.5 7c0-1.5 1.5-1.5 1.5-3M13.5 7c0-1.5 1.5-1.5 1.5-3"></path></svg>
+  </div>
+  <div style="flex: 1; min-width: 0; display: flex; align-items: baseline; gap: 6px">
+    <div style="font-family: 'Zen Maru Gothic', sans-serif; font-weight: 900; font-size: 18px; letter-spacing: 0.01em">Tabet-ai</div>
+    <div style="font-size: 12px; font-weight: 700; color: #5A4D42">タベタイ</div>
+  </div>
+  <sc-if value="{{canRestart}}" hint-placeholder-val="{{ false }}">
+    <button type="button" onClick="{{restart}}" style="flex: none; height: 44px; padding: 0 10px; border: 0; background: transparent; display: flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 700; color: #5A4D42">
+      <svg class="ic" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.6-5.9"></path><path d="M4 4.500v4.500h4.500"></path></svg>
+      はじめから
+    </button>
+  </sc-if>
+</div>
+
+<sc-if value="{{isFlow}}" hint-placeholder-val="{{ true }}">
+  <div aria-label="ステップ" style="flex: none; position: relative; padding: 0 16px 10px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr))">
+    <div style="position: absolute; left: 60px; right: 60px; top: 11px; height: 2px; background: #EADCC8"></div>
+    <div style="position: relative; display: flex; flex-direction: column; align-items: center; gap: 3px">
+      <div style="width: 24px; height: 24px; border-radius: 50%; background: {{sp.a.bg}}; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; transition: background .25s ease">
+        <sc-if value="{{sp.a.num}}" hint-placeholder-val="{{ true }}">1</sc-if>
+        <sc-if value="{{sp.a.done}}" hint-placeholder-val="{{ false }}"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if>
+      </div>
+      <div style="font-size: 12px; white-space: nowrap; font-weight: {{sp.a.w}}; color: {{sp.a.tc}}">どこで・誰と</div>
+    </div>
+    <div style="position: relative; display: flex; flex-direction: column; align-items: center; gap: 3px">
+      <div style="width: 24px; height: 24px; border-radius: 50%; background: {{sp.b.bg}}; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; transition: background .25s ease">
+        <sc-if value="{{sp.b.num}}" hint-placeholder-val="{{ true }}">2</sc-if>
+        <sc-if value="{{sp.b.done}}" hint-placeholder-val="{{ false }}"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if>
+      </div>
+      <div style="font-size: 12px; white-space: nowrap; font-weight: {{sp.b.w}}; color: {{sp.b.tc}}">何食べたい？</div>
+    </div>
+    <div style="position: relative; display: flex; flex-direction: column; align-items: center; gap: 3px">
+      <div style="width: 24px; height: 24px; border-radius: 50%; background: {{sp.c.bg}}; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; transition: background .25s ease">
+        <sc-if value="{{sp.c.num}}" hint-placeholder-val="{{ true }}">3</sc-if>
+        <sc-if value="{{sp.c.done}}" hint-placeholder-val="{{ false }}"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if>
+      </div>
+      <div style="font-size: 12px; white-space: nowrap; font-weight: {{sp.c.w}}; color: {{sp.c.tc}}">AIが考える</div>
+    </div>
+    <div style="position: relative; display: flex; flex-direction: column; align-items: center; gap: 3px">
+      <div style="width: 24px; height: 24px; border-radius: 50%; background: {{sp.d.bg}}; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; transition: background .25s ease">
+        <sc-if value="{{sp.d.num}}" hint-placeholder-val="{{ true }}">4</sc-if>
+        <sc-if value="{{sp.d.done}}" hint-placeholder-val="{{ false }}"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if>
+      </div>
+      <div style="font-size: 12px; white-space: nowrap; font-weight: {{sp.d.w}}; color: {{sp.d.tc}}">今日の提案</div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{showStrip}}" hint-placeholder-val="{{ false }}">
+  <div style="flex: none; padding: 2px 16px 10px; border-bottom: 1.5px solid #F1E6D6; display: flex; flex-direction: column; gap: 6px">
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
+      <div style="font-size: 12px; font-weight: 700; color: #5A4D42">今日食べる人</div>
+      <div style="display: flex; align-items: center; gap: 6px">
+        <div style="font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; background: #FFEBD6; color: #8A3209">{{placeLabel}}</div>
+        <div style="font-size: 12px; font-weight: 700; padding: 2px 10px; border-radius: 999px; background: #2E2219; color: #FFFAF1">{{countText}}</div>
+      </div>
+    </div>
+    <div style="display: flex; gap: 10px">
+      <sc-for list="{{strip}}" as="m" hint-placeholder-count="1">
+        <div style="min-width: 56px; display: flex; flex-direction: column; align-items: center; gap: 3px">
+          <div style="width: 36px; height: 36px; border-radius: 50%; background: {{m.color}}; opacity: {{m.op}}; display: flex; align-items: center; justify-content: center; font-family: 'Zen Maru Gothic', sans-serif; font-weight: 900; font-size: {{m.fs}}; transition: opacity .3s ease">{{m.ch}}</div>
+          <div style="font-size: 12px; font-weight: 700; padding: 0 8px; border-radius: 999px; white-space: nowrap; background: {{m.ansBg}}; color: {{m.ansColor}}; border: 1.5px solid {{m.ansBorder}}">{{m.ans}}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</sc-if>
+
+<div style="flex: 1; min-height: 0; position: relative">
+
+<sc-if value="{{isWho}}" hint-placeholder-val="{{ true }}">
+<div style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; display: flex; flex-direction: column">
+  <div class="sc" style="flex: 1; min-height: 0; overflow-y: auto; box-sizing: border-box; padding: 2px 16px 16px; display: flex; flex-direction: column; gap: 12px">
+
+    <div style="display: flex; flex-direction: column; gap: 10px">
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
+        <h1 style="margin: 0; font-family: 'Zen Maru Gothic', sans-serif; font-weight: 900; font-size: 34px; line-height: 1.22; letter-spacing: 0.01em">今日はどこで、<br>誰と食べる？</h1>
+        <svg viewBox="0 0 120 120" width="84" height="84" aria-hidden="true" style="flex: none">
+          <rect x="97" y="12" width="5" height="96" rx="2.5" fill="#B4430F" transform="rotate(10 99 60)"></rect>
+          <rect x="107" y="12" width="5" height="96" rx="2.5" fill="#B4430F" transform="rotate(10 109 60)"></rect>
+          <circle cx="50" cy="62" r="46" fill="#6DB58A"></circle>
+          <circle cx="50" cy="62" r="38" fill="#FFFDF7"></circle>
+          <circle cx="42" cy="54" r="15" fill="#FFF3D6"></circle>
+          <circle cx="42" cy="54" r="7.5" fill="#F5A623"></circle>
+          <rect x="54" y="68" width="24" height="9" rx="4.5" fill="#F26B5B" transform="rotate(-18 66 72)"></rect>
+          <rect x="34" y="78" width="22" height="8" rx="4" fill="#C98566" transform="rotate(14 45 82)"></rect>
+          <circle cx="66" cy="48" r="3.2" fill="#6DB58A"></circle>
+          <circle cx="72" cy="57" r="3.2" fill="#8CCB7A"></circle>
+          <circle cx="61" cy="88" r="3.2" fill="#8CCB7A"></circle>
+        </svg>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+        <div style="background: #E1F2E5; border-radius: 18px; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px">
+          <div style="font-size: 12px; font-weight: 700; color: #1F5233">今の目標</div>
+          <div style="font-family: 'Zen Maru Gothic', sans-serif; font-weight: 700; font-size: 14px; line-height: 1.4">無理せず栄養バランスを改善したい</div>
+        </div>
+        <div style="background: #FFEBD6; border-radius: 18px; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px">
+          <div style="font-size: 12px; font-weight: 700; color: #8A3209">最近の傾向</div>
+          <div style="font-family: 'Zen Maru Gothic', sans-serif; font-weight: 700; font-size: 14px; line-height: 1.4">野菜と鉄分が不足しやすい</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <div style="font-size: 13px; font-weight: 700; color: #5A4D42">どこで食べる？</div>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+        <button type="button" aria-pressed="{{place.home.on}}" onClick="{{place.home.pick}}" style="min-height: 64px; box-sizing: border-box; border-radius: 20px; border: 2.5px solid {{place.home.border}}; background: {{place.home.bg}}; padding: 8px 12px; display: flex; align-items: center; gap: 10px; text-align: left; transition: background .2s ease">
+          <svg class="ic" viewBox="0 0 24 24" width="26" height="26" aria-hidden="true" style="flex: none"><path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"></path></svg>
+          <div>
+            <div style="font-family: 'Zen Maru Gothic', sans-serif; font-weight: 900; font-size: 17px; line-height: 1.3">家で食べる</div>
+            <div style="font-size: 12px; font-weight: 700; color: #5A4D42">家で作って食べる</div>
+          </div>
+        </button>
+        <button type="button" aria-pressed="{{place.out.on}}" onClick="{{place.out.pick}}" style="min-height: 64px; box-sizing: border-box; border-radius: 20px; border: 2.5px solid {{place.out.border}}; background: {{place.out.bg}}; padding: 8px 12px; display: flex; align-items: center; gap: 10px; text-align: left; transition: background .2s ease">
+          <svg class="ic" viewBox="0 0 24 24" width="26" height="26" aria-hidden="true" style="flex: none"><path d="M4 9l1.5-5h13L20 9"></path><path d="M4 9h16v10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"></path><path d="M9 20v-6h6v6"></path></svg>
+          <div>
+            <div style="font-family: 'Zen Maru Gothic', sans-serif; font-weight: 900; font-size: 17px; line-height: 1.3">外で食べる</div>
+            <div style="font-size: 12px; font-weight: 700; color: #5A4D42">お店で食べる・買う</div>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <div style="font-size: 13px; font-weight: 700; color: #5A4D42; margin-bottom: -6px">誰と食べる？</div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+      <button type="button" aria-pressed="{{who.solo.on}}" onClick="{{who.solo.pick}}" style="position: relative; height: 124px; box-sizing: border-box; border-radius: 24px; border: 2.5px solid {{who.solo.border}}; background: {{who.solo.bg}}; padding: 12px 14px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; text-align: left; transition: background .2s ease">
+        <div style="width: 40px; height: 40px; border-radius: 50%; background: #F26B5B; display: flex; align-items: center; justify-content: center; font-family: 'Zen Maru Gothic', sans-serif; font-weight: 900; font-size: 13px">自分</div>
+        <div>
+          <div style="font-family: 'Zen Maru Gothic', sans-serif; font-weight: 900; font-size: 22px; line-height: 1.3">ひとり</div>
+          <div style="font-size: 12px; font-weight: 700; color: #5A4D42">あなたにちょうどいい</div>
+        </div>
+        <sc-if value="{{who.solo.on}}" hint-placeholder-val="{{ false }}">
+          <div style="position: absolute; right: 10px; top: 10px; width: 26px; height: 26px; border-radius: 50%; background: #2E2219; color: #FFFAF1; display: flex; align-items: center; justify-content: center"><svg class="ic" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></div>
+        </sc-if>
+      </button>
+      <button type="button" aria-pressed="{{who.fam.on}}" onClick="{{who.fam.pick}}" style="position: relative; height: 124px; box-sizing: border-box; border-radius: 24px; border: 2.5px solid {{who.fam.border}}; background: {{who.fam.bg}}; padding: 12px 14px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; text-align: left; transition: background .2s ease">
+        <div style="display: flex">
+          <div style="width: 40px; height: 40px; box-sizing: border-box; border-radius: 50%; border: 2px solid #FFFDF7; background: #F26B5B; display: flex; align-items: center; justify-content: center; font-family: 'Zen Maru Gothic', sans-serif; font-weight: 900; font-size: 12px">自分</div>
+          <div style="width: 40px; height: 40px; box-sizing: border-box; margin-left: -12px; border-radius: 50%; border: 2px solid #FFFDF7; background: #6DB58A; display: flex; align-items: center; justify-content: center; font-family: 'Zen Maru Gothic', sans-serif; font-weight: 900; font-size: 16px">母</div>
+          <div style="width: 40px; height: 40px; box-sizing: border-box; margin-left: -12px; border-radius: 50%; border: 2px solid #FFFDF7; background: #F28A3C; display: flex; align-items: center; justify-content: center; font-family: 'Zen Maru Gothic', sans-serif; font-weight: 900; font-size: 16px">父</div>
+          <div style="width: 40px; height: 40px; box-sizing: border-box; margin-left: -12px; border-radius: 50%; border: 2px solid #FFFDF7; background: #F4C542; display: flex; align-items: center; justify-content: center; font-family: 'Zen Maru Gothic', sans-serif; font-weight: 900; font-size: 16px">弟</div>
+        </div>
+        <div>
+          <div style="font-family: 'Zen Maru Gothic', sans-serif; font-weight: 900; font-size: 22px; line-height: 1.3">家族と</div>
+          <div style="font-size: 12px; font-weight: 700; color: #5A4D42">みんなにちょうどいい</div>
+        </div>
+        <sc-if value="{{who.fam.on}}" hint-placeholder-val="{{ false }}">
+          <div style="position: absolute; right: 10px; top: 10px; width: 26px; height: 26px; border-radius: 50%; background: #2E2219; color: #FFFAF1; display: flex; align-items: center; justify-content: center"><svg class="ic" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></div>
+        </sc-if>
+      </button>
+    </div>
+
+    <sc-if value="{{who.any}}" hint-placeholder-val="{{ false }}">
+      <div class="rise" style="background: #FFFFFF; border: 1.5px solid #F1E6D6; border-radius: 22px; padding: 12px; display: flex; flex-direction: column; gap: 8px">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
+          <div style="font-size: 13px; font-weight: 700; color: #5A4D42">今日食べる人</div>
+          <div style="font-size: 12px; font-weight: 700; padding: 2px 10px; border-radius: 999px; background: #2E2219; color: #FFFAF1">{{countText}}</div>
+        </div>
+        <sc-for list="{{who.rows}}" as="m" hint-placeholder-count="1">
+          <button type="button" aria-pressed="{{m.on}}" onClick="{{m.toggle}}" style="min-height: 52px; box-sizing: border-box; border-radius: 16px; border: 2px solid {{m.border}}; background: {{m.bg}}; padding: 6px 10px; display: flex; align-items: center; gap: 10px; text-align: left">
+            <div style="width: 36px; height: 36px; flex: none; border-radius: 50%; background: {{m.color}}; opacity: {{m.op}}; display: flex; align-items: center; justify-content: center; font-family: 'Zen Maru Gothic', sans-serif; font-weight: 900; font-size: {{m.fs}}">{{m.ch}}</div>
+            <div style="flex: 1; min-width: 0">
+              <div style="font-size: 15px; font-weight: 700; line-height: 1.3">{{m.name}}</div>
+              <div style="font-size: 12px; font-weight: 500; color: #5A4D42">{{m.note}}</div>
+            </div>
+            <sc-if value="{{m.on}}" hint-placeholder-val="{{ true }}">
+              <div style="width: 26px; height: 26px; flex: none; border-radius: 50%; background: #2B6E45; color: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg class="ic" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></div>
+            </sc-if>
+            <sc-if value="{{m.off}}" hint-placeholder-val="{{ false }}">
+              <div style="flex: none; font-size: 12px; font-weight: 700; padding: 2px 10px; border-radius: 999px; background: #FFE3DE; color: #8F2A1E">{{m.awayLabel}}</div>
+            </sc-if>
+          </button>
+        </sc-for>
+        <sc-if value="{{who.fam.on}}" hint-placeholder-val="{{ false }}">
+          <div style="font-size: 12px; font-weight: 500; color: #5A4D42; text-align: center">{{who.hint}}</div>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <div style="display: flex; gap: 10px; align-items: flex-start">
+      <div style="width: 36px; height: 36px; flex: none; border-radius: 50%; background: #6DB58A; color: #2E2219; display: flex; align-items: center; justify-content: center">
+        <svg class="ic" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M9 10h.01M15 10h.01"></path><path d="M8.5 14c1 1.2 2.2 1.8 3.5 1.8s2.5-.6 3.5-1.8"></path></svg>
+      </div>
+      <div style="flex: 1; min-width: 0; background: #FFFFFF; border: 1.5px solid #F1E6D6; border-radius: 6px 20px 20px 20px; padding: 11px 14px; font-size: 15px; font-weight: 500">{{homeLine}}</div>
+    </div>
+
+    <div style="background: #FFFFFF; border: 1.5px solid #F1E6D6; border-radius: 22px; padding: 14px 16px; display: flex; flex-direction: column; gap: 12px">
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 8px">
+          <div style="font-family: 'Zen Maru Gothic', sans-serif; font-weight: 700; font-size: 17px">今日のPFCバランス</div>
+          <div style="flex: none; font-size: 12px; font-weight: 500; color: #5A4D42">1日の必要量（目安） <span style="font-size: 15px; font-weight: 700; color: #2E2219">{{pfc.kcal}}</span> kcal</div>
+        </div>
+        <div style="font-size: 12px; font-weight: 500; color: #5A4D42">{{pfc.basis}}</div>
+      </div>
+
+      <sc-for list="{{pfc.rows}}" as="r" hint-placeholder-count="3">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 8px">
+            <div style="font-size: 14px; font-weight: 700">{{r.name}}<span style="font-size: 12px; font-weight: 500; color: #5A4D42">（{{r.tag}}）</span></div>
+            <div style="font-size: 13px; font-weight: 500; color: #5A4D42"><span style="font-size: 18px; font-weight: 700; color: #2E2219">{{r.now}}</span> / {{r.need}} g</div>
+          </div>
+          <div role="img" aria-label="{{r.aria}}" style="height: 14px; border-radius: 7px; background: #F3E8D8; overflow: hidden">
+            <div style="width: {{r.pct}}; height: 100%; border-radius: 7px; background: {{r.color}}; transition: width .5s ease"></div>
+          </div>
+          <div style="font-size: 13px; font-weight: 700; color: {{r.leftFg}}; text-align: right">{{r.leftText}}</div>
+        </div>
+      </sc-for>
+
+      <div style="display: flex; align-items: center; gap: 12px; font-size: 12px; font-weight: 500; color: #5A4D42">
+        <div style="display: flex; align-items: center; gap: 5px"><div style="display: flex; width: 18px; height: 8px; border-radius: 4px; overflow: hidden"><div style="flex: 1; background: #E0652B"></div><div style="flex: 1; background: #E2A21B"></div><div style="flex: 1; background: #4E9E5C"></div></div>{{pfc.caption}}</div>
+        <div style="display: flex; align-items: center; gap: 5px"><div style="width: 18px; height: 8px; border-radius: 4px; background: #F3E8D8"></div>まだ足りない量</div>
+      </div>
+
+      <div style="display: flex; gap: 8px; align-items: flex-start; background: #FFF0C4; border-radius: 16px; padding: 9px 12px; font-size: 13px; font-weight: 700">
+        <svg class="ic" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" style="flex: none; margin-top: 1px"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"></path><path d="M19 16v4M17 18h4"></path></svg>
+        <div>{{pfc.note}}</div>
+      </div>
+    </div>
+
+  </div>
+
+  <sc-if value="{{who.needPlace}}" hint-placeholder-val="{{ false }}">
+    <div style="flex: none; height: 52px; padding: 10px 16px 12px; border-top: 1.5px solid #F1E6D6; background: #FFFAF1; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #5A4D42">「家で食べる」か「外で食べる」も選んでね</div>
+  </sc-if>
+  <sc-if value="{{who.ready}}" hint-placeholder-val="{{ false }}">
+    <div style="flex: none; padding: 10px 16px 12px; border-top: 1.5px solid #F1E6D6; background: #FFFAF1">
+      <button type="button" class="rise" onClick="{{toWant}}" style="width: 100%; height: 52px; border: 0; border-radius: 999px; background: #B4430F; color: #FFFFFF; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px">
+        {{who.cta}}
+        <svg class="ic" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+      </button>
+    </div>
+  </sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{isWant}}" hint-placeholder-val="{{ false }}">
+<div style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; display: flex; flex-direction: column">
+  <div class="sc" ref="{{wantRef}}" style="flex: 1; min-height: 0; overflow-y: auto; box-sizing: border-box; padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 12px">
+
+    <div>
+      <h1 style="margin: 0; font-family: 'Zen Maru Gothic', sans-serif; font-weight: 900; font-size: 30px; line-height: 1.3">今日、何食べたい？</h1>
+      <sc-if value="{{w.groupIntro}}" hint-placeholder-val="{{ false }}">
+        <div style="font-size: 13px; font-weight: 500; color: #5A4D42">まずはあなたから。そのあと、みんなにも聞いてみよう。</div>
+      </sc-if>
+    </div>
+
+    <sc-if value="{{w.asking}}" hint-placeholder-val="{{ true }}">
+      <div class="inp" style="height: 66px; flex: none; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 0 8px 0 18px; background: #FFFFFF; border: 2px solid #F28A3C; border-radius: 24px">
+        <input type="text" aria-label="今食べたいものを教えて" value="{{query}}" onChange="{{onQuery}}" onKeyDown="{{onKey}}" placeholder="今食べたいものを教えて" style="flex: 1; min-width: 0; height: 48px; border: 0; background: transparent; font: inherit; font-size: 17px; font-weight: 500; color: #2E2219">
+        <button type="button" aria-label="これで伝える" onClick="{{submit}}" style="width: 48px; height: 48px; flex: none; border: 0; border-radius: 50%; background: #B4430F; color: #FFFFFF; display: flex; align-items: center; justify-content: center">
+          <svg class="ic" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+        </button>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px">
+        <sc-for list="{{w.chips}}" as="c" hint-placeholder-count="6">
+          <button type="button" onClick="{{c.pick}}" style="height: 46px; padding: 0 16px; border-radius: 999px; background: #FFFFFF; border: 1.5px solid #EADCC8; font-size: 15px; font-weight: 700; white-space: nowrap">{{c.label}}</button>
+        </sc-for>
+      </div>
+      <div style="display: flex; gap: 10px; align-items: flex-start">
+        <div style="width: 36px; height: 36px; flex: none; border-radius: 50%; background: #6DB58A; color: #2E2219; display: flex; align-items: center; justify-content: center">
+          <svg class="ic" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M9 10h.01M15 10h.01"></path><path d="M8.5 14c1 1.2 2.2 1.8 3.5 1.8s2.5-.6 3.5-1.8"></path></svg>
+        </div>
+        <div style="flex: 1; min-width: 0; background: #FFFFFF; border: 1.5px solid #F1E6D6; border-radius: 6px 20px 20px 20px; padding: 11px 14px; font-size: 15px; font-weight: 500">{{w.hint}}</div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{w.answered}}" hint-placeholder-val="{{ false }}">
+      <div class="rise" style="display: flex; justify-content: flex-end">
+        <div style="max-width: 280px; background: #FFD9B5; border-radius: 20px 20px 6px 20px; padding: 10px 16px; font-size: 15px; font-weight: 700">{{myWish}}</div>
+      </div>
+      <div class="rise" style="display: flex; gap: 10px; align-items: flex-start">
+        <div style="width: 36px; height: 36px; flex: none; border-radius: 50%; background: #6DB58A; color: #2E2219; display: flex; align-items: center; justify-content: center">
+          <svg class="ic" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M9 10h.01M15 10h.01"></path><path d="M8.5 14c1 1.2 2.2 1.8 3.5 1.8s2.5-.6 3.5-1.8"></path></svg>
+        </div>
+        <div style="flex: 1; min-width: 0; background: #FFFFFF; border: 1.5px solid #F1E6D6; border-radius: 6px 20px 20px 20px; padding: 11px 14px; font-size: 15px; font-weight: 500"><span style="font-weight: 700">{{w.affirm}}</span><br>みんなにも聞いてみよう。</div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{f.sent}}" hint-placeholder-val="{{ false }}">
+      <div class="rise" style="background: #FFFFFF; border: 1.5px dashed #D8C9B6; border-radius: 20px; padding: 12px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px">
+        <div style="font-size: 12px; font-weight: 700; color: #5A4D42">{{f.sentTo}}のスマホに届いた質問</div>
+        <div style="background: #CFEBD6; border-radius: 20px 20px 20px 6px; padding: 9px 14px; font-size: 15px; font-weight: 700">今日の夜ごはん、何食べたい？</div>
+        <div style="display: flex; gap: 6px; flex-wrap: wrap">
+          <div style="font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 999px; background: #FFEBD6">食べたいものを送る</div>
+          <div style="font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 999px; background: #FFF0C4">わかんない</div>
+          <div style="font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 999px; background: #FFE3DE">{{f.awayTag}}</div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{f.mo1}}" hint-placeholder-val="{{ false }}">
+      <div class="rise" style="display: flex; gap: 8px; align-items: flex-end">
+        <div style="width: 32px; height: 32px; flex: none; border-radius: 50%; background: #6DB58A; display: flex; align-items: center; justify-content: center; font-family: 'Zen Maru Gothic', sans-serif; font-weight: 900; font-size: 14px">母</div>
+        <div style="max-width: 250px; background: #FFFFFF; border: 1.5px solid #F1E6D6; border-radius: 20px 20px 20px 6px; padding: 9px 14px; font-size: 15px; font-weight: 700">野菜多めがいい</div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{f.fa1}}" hint-placeholder-val="{{ false }}">
+      <div class="rise" style="display: flex; gap: 8px; align-items: flex-end">
+        <div style="width: 32px; height: 32px; flex: none; border-radius: 50%; background: #F28A3C; display: flex; align-items: center; justify-content: center; font-family: 'Zen Maru Gothic', sans-serif; font-weight: 900; font-size: 14px">父</div>
+        <div style="max-width: 250px; background: #FFFFFF; border: 1.5px solid #F1E6D6; border-radius: 20px 20px 20px 6px; padding: 9px 14px; font-size: 15px; font-weight: 700">さっぱりしたもの</div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{f.br1}}" hint-placeholder-val="{{ false }}">
+      <div class="rise" style="display: flex; gap: 8px; align-items: flex-end">
+        <div style="width: 32px; height: 32px; flex: none; border-radius: 50%; background: #F4C542; display: flex; align-items: center; justify-content: center; font-family: 'Zen Maru Gothic', sans-serif; font-weight: 900; font-size: 14px">弟</div>
+        <div style="max-width: 250px; background: #FFFFFF; border: 1.5px solid #F1E6D6; border-radius: 20px 20px 20px 6px; padding: 9px 14px; font-size: 15px; font-weight: 700">わかんない</div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{f.ai}}" hint-placeholder-val="{{ false }}">
+      <div class="rise" style="display: flex; gap: 8px; align-items: flex-end">
+        <div style="width: 32px; height: 32px; flex: none; border-radius: 50%; background: #6DB58A; color: #2E2219; display: flex; align-items: center; justify-content: center">
+          <svg class="ic" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M9 10h.01M15 10h.01"></path><path d="M8.5 14c1 1.2 2.2 1.8 3.5 1.8s2.5-.6 3.5-1.8"></path></svg>
+        </div>
+        <div style="max-width: 270px; background: #FFFFFF; border: 1.5px solid #F1E6D6; border-radius: 20px 20px 20px 6px; padding: 9px 14px; font-size: 15px; font-weight: 500">決めにくい日もあるよね。<span style="font-weight: 700">この中ならどれ？</span></div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{f.choosing}}" hint-placeholder-val="{{ false }}">
+      <div class="rise" style="display: flex; flex-direction: column; gap: 6px">
+        <div style="font-size: 12px; font-weight: 700; color: #5A4D42">弟のスマホに届く選択肢（タップで回答）</div>
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+          <button type="button" onClick="{{f.pick.curry}}" style="height: 96px; border: 2px solid #EADCC8; border-radius: 20px; background: #FFFFFF; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 15px; font-weight: 700">
+            <svg viewBox="0 0 64 64" width="56" height="56" aria-hidden="true">
+              <circle cx="32" cy="32" r="30" fill="#F1E6D6"></circle>
+              <circle cx="32" cy="32" r="26" fill="#FFFDF7"></circle>
+              <path d="M32 12a20 20 0 0 1 0 40c-6-6-8-13-8-20s2-14 8-20z" fill="#B9742F"></path>
+              <circle cx="38" cy="24" r="3.5" fill="#F28A3C"></circle>
+              <circle cx="42" cy="36" r="3.5" fill="#E9C9A8"></circle>
+              <circle cx="36" cy="44" r="3" fill="#6DB58A"></circle>
+              <circle cx="18" cy="28" r="2" fill="#E0533F"></circle>
+            </svg>
+            カレー
+          </button>
+          <button type="button" onClick="{{f.pick.karaage}}" style="height: 96px; border: 2px solid #EADCC8; border-radius: 20px; background: #FFFFFF; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 15px; font-weight: 700">
+            <svg viewBox="0 0 64 64" width="56" height="56" aria-hidden="true">
+              <circle cx="32" cy="32" r="30" fill="#F1E6D6"></circle>
+              <circle cx="32" cy="32" r="26" fill="#FFFDF7"></circle>
+              <circle cx="20" cy="24" r="10" fill="#8CCB7A"></circle>
+              <circle cx="26" cy="36" r="10" fill="#C98144"></circle>
+              <circle cx="40" cy="30" r="10" fill="#B36E36"></circle>
+              <circle cx="36" cy="44" r="9" fill="#D9925A"></circle>
+              <circle cx="24" cy="33" r="2.5" fill="#E2A766"></circle>
+              <circle cx="42" cy="27" r="2.5" fill="#D08A4C"></circle>
+              <path d="M44 16l9 5-9 5z" fill="#F4C542"></path>
+            </svg>
+            唐揚げ
+          </button>
+          <button type="button" onClick="{{f.pick.shoga}}" style="height: 96px; border: 2px solid #EADCC8; border-radius: 20px; background: #FFFFFF; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 15px; font-weight: 700">
+            <svg viewBox="0 0 64 64" width="56" height="56" aria-hidden="true">
+              <circle cx="32" cy="32" r="30" fill="#F1E6D6"></circle>
+              <circle cx="32" cy="32" r="26" fill="#FFFDF7"></circle>
+              <circle cx="22" cy="24" r="11" fill="#B7E0A4"></circle>
+              <circle cx="26" cy="20" r="6" fill="#8CCB7A"></circle>
+              <rect x="22" y="30" width="28" height="9" rx="4.5" fill="#B36E36" transform="rotate(-10 36 34)"></rect>
+              <rect x="20" y="38" width="28" height="9" rx="4.5" fill="#C98144" transform="rotate(6 34 42)"></rect>
+              <rect x="26" y="46" width="20" height="5" rx="2.5" fill="#EFD9A0" transform="rotate(-6 36 48)"></rect>
+            </svg>
+            生姜焼き
+          </button>
+          <button type="button" onClick="{{f.pick.pasta}}" style="height: 96px; border: 2px solid #EADCC8; border-radius: 20px; background: #FFFFFF; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 15px; font-weight: 700">
+            <svg viewBox="0 0 64 64" width="56" height="56" aria-hidden="true">
+              <circle cx="32" cy="32" r="30" fill="#F1E6D6"></circle>
+              <circle cx="32" cy="32" r="26" fill="#FFFDF7"></circle>
+              <circle cx="32" cy="33" r="17" fill="#F7DC9B"></circle>
+              <path class="nd" d="M20 30c4-6 8 6 12 0s8 6 12 0"></path>
+              <path class="nd" d="M22 40c4-6 8 6 12 0s6 4 9 0"></path>
+              <circle cx="32" cy="32" r="8" fill="#E0533F"></circle>
+              <circle cx="35" cy="29" r="2.5" fill="#6DB58A"></circle>
+            </svg>
+            パスタ
+          </button>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{f.br2}}" hint-placeholder-val="{{ false }}">
+      <div class="rise" style="display: flex; gap: 8px; align-items: flex-end">
+        <div style="width: 32px; height: 32px; flex: none; border-radius: 50%; background: #F4C542; display: flex; align-items: center; justify-content: center; font-family: 'Zen Maru Gothic', sans-serif; font-weight: 900; font-size: 14px">弟</div>
+        <div style="max-width: 250px; background: #FFFFFF; border: 1.5px solid #F1E6D6; border-radius: 20px 20px 20px 6px; padding: 9px 14px; display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 700">{{f.choiceLabel}}<span style="font-size: 12px; font-weight: 700; padding: 1px 8px; border-radius: 999px; background: #FFF0C4; color: #5A4D42">タップで回答</span></div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{f.fa2}}" hint-placeholder-val="{{ false }}">
+      <div class="rise" style="display: flex; gap: 8px; align-items: flex-end">
+        <div style="width: 32px; height: 32px; flex: none; border-radius: 50%; background: #F28A3C; display: flex; align-items: center; justify-content: center; font-family: 'Zen Maru Gothic', sans-serif; font-weight: 900; font-size: 14px">父</div>
+        <div style="max-width: 260px; background: #FFFFFF; border: 1.5px solid #F1E6D6; border-radius: 20px 20px 20px 6px; padding: 9px 14px; display: flex; flex-direction: column; align-items: flex-start; gap: 4px">
+          <div style="font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; background: #FFE3DE; color: #8F2A1E">{{f.awayTag}}</div>
+          <div style="font-size: 15px; font-weight: 700">{{f.awayMsg}}</div>
+        </div>
+      </div>
+      <div class="rise" style="display: flex; justify-content: center">
+        <div style="font-size: 13px; font-weight: 700; padding: 6px 16px; border-radius: 999px; background: #2E2219; color: #FFFAF1">{{countText}}</div>
+      </div>
+    </sc-if>
+
+  </div>
+
+  <sc-if value="{{f.bar}}" hint-placeholder-val="{{ false }}">
+    <div style="flex: none; padding: 10px 16px 12px; border-top: 1.5px solid #F1E6D6; background: #FFFAF1">
+      <sc-if value="{{f.barSend}}" hint-placeholder-val="{{ true }}">
+        <button type="button" class="rise" onClick="{{f.send}}" style="width: 100%; height: 52px; border: 0; border-radius: 999px; background: #B4430F; color: #FFFFFF; font-size: 16px; font-weight: 700">みんなにも聞いてみる</button>
+      </sc-if>
+      <sc-if value="{{f.barWait}}" hint-placeholder-val="{{ false }}">
+        <div style="height: 52px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #5A4D42">みんなの回答を待っています…</div>
+      </sc-if>
+      <sc-if value="{{f.barPick}}" hint-placeholder-val="{{ false }}">
+        <div style="height: 52px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #5A4D42">文字を打たなくても、タップで答えられます</div>
+      </sc-if>
+      <sc-if value="{{f.barReady}}" hint-placeholder-val="{{ false }}">
+        <button type="button" class="rise" onClick="{{f.summarize}}" style="width: 100%; height: 52px; border: 0; border-radius: 999px; background: #B4430F; color: #FFFFFF; font-size: 16px; font-weight: 700">みんなの希望から考えてもらう</button>
+      </sc-if>
+    </div>
+  </sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{isThink}}" hint-placeholder-val="{{ false }}">
+<div style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; box-sizing: border-box; padding: 20px 20px 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px">
+  <div style="display: flex; gap: 8px">
+    <sc-for list="{{think.people}}" as="p" hint-placeholder-count="1">
+      <div class="rise" style="width: 52px; height: 52px; border-radius: 50%; background: {{p.color}}; display: flex; align-items: center; justify-content: center; font-family: 'Zen Maru Gothic', sans-serif; font-weight: 900; font-size: {{p.fs}}">{{p.ch}}</div>
+    </sc-for>
+  </div>
+  <h1 style="margin: 0; font-family: 'Zen Maru Gothic', sans-serif; font-weight: 900; font-size: 24px; line-height: 1.35; text-align: center">{{think.title}}</h1>
+  <div style="width: 100%; box-sizing: border-box; background: #FFFFFF; border: 1.5px solid #F1E6D6; border-radius: 24px; padding: 14px; display: flex; flex-direction: column; gap: 10px">
+    <sc-for list="{{think.items}}" as="it" hint-placeholder-count="5">
+      <div style="display: flex; align-items: center; gap: 10px; opacity: {{it.op}}; transition: opacity .3s ease">
+        <div style="width: 28px; height: 28px; flex: none; border-radius: 50%; background: {{it.bg}}; color: #FFFFFF; display: flex; align-items: center; justify-content: center; transition: background .3s ease">
+          <svg class="ic" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
+        </div>
+        <div style="flex: 1; min-width: 0">
+          <div style="font-size: 12px; font-weight: 700; color: #5A4D42; line-height: 1.3">{{it.label}}</div>
+          <div style="font-size: 15px; font-weight: 700; line-height: 1.4">{{it.text}}</div>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+  <div aria-label="考え中" style="display: flex; gap: 6px">
+    <div class="td" style="width: 8px; height: 8px; border-radius: 50%; background: #6B5D51"></div>
+    <div class="td td2" style="width: 8px; height: 8px; border-radius: 50%; background: #6B5D51"></div>
+    <div class="td td3" style="width: 8px; height: 8px; border-radius: 50%; background: #6B5D51"></div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{isResult}}" hint-placeholder-val="{{ false }}">
+<div class="sc" ref="{{resRef}}" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; overflow-y: auto; box-sizing: border-box; padding: 12px 16px 20px; display: flex; flex-direction: column; gap: 12px">
+
+  <sc-if value="{{resSolo}}" hint-placeholder-val="{{ true }}">
+    <div style="display: flex; justify-content: flex-end">
+      <div style="max-width: 280px; background: #FFD9B5; border-radius: 20px 20px 6px 20px; padding: 10px 16px; font-size: 15px; font-weight: 700">{{myWish}}</div>
+    </div>
+    <div class="rise" style="display: flex; gap: 10px; align-items: flex-start">
+      <div style="width: 36px; height: 36px; flex: none; border-radius: 50%; background: #6DB58A; color: #2E2219; display: flex; align-items: center; justify-content: center">
+        <svg class="ic" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M9 10h.01M15 10h.01"></path><path d="M8.5 14c1 1.2 2.2 1.8 3.5 1.8s2.5-.6 3.5-1.8"></path></svg>
+      </div>
+      <div style="flex: 1; min-width: 0; background: #FFFFFF; border: 1.5px solid #F1E6D6; border-radius: 6px 20px 20px 20px; padding: 12px 14px; font-size: 15px; font-weight: 500"><span style="font-weight: 700">{{sr.affirm}}</span><br>{{sr.line}}</div>
+    </div>
+
+    <div class="rise" style="background: #FFFFFF; border: 2px solid #F28A3C; border-radius: 24px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+      <div>
+        <div style="font-size: 12px; font-weight: 700; color: #B4430F">今日のあなたには</div>
+        <h2 style="margin: 0; font-family: 'Zen Maru Gothic', sans-serif; font-weight: 900; font-size: 26px; line-height: 1.25">{{sr.dish}}</h2>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 10px">
+        <div style="position: relative; width: 112px; height: 112px; flex: none">
+          <sc-if value="{{sr.isRamen}}" hint-placeholder-val="{{ true }}">
+            <svg viewBox="0 0 120 120" width="112" height="112" aria-hidden="true" style="position: absolute; left: 0; top: 0">
+              <circle cx="60" cy="60" r="57" fill="#F26B5B"></circle>
+              <circle cx="60" cy="60" r="49" fill="#FFF6E6"></circle>
+              <circle cx="60" cy="60" r="45" fill="#E9A552"></circle>
+              <path class="nd" d="M28 56c6-8 12 8 18 0s12 8 18 0 12 8 18 0"></path>
+              <path class="nd" d="M30 66c6-8 12 8 18 0s12 8 18 0 12 8 16 0"></path>
+              <path class="nd" d="M38 76c6-8 12 8 18 0s12 8 18 0"></path>
+              <circle cx="42" cy="42" r="13" fill="#C98566"></circle>
+              <circle cx="42" cy="42" r="8" fill="#E2A98C"></circle>
+              <circle cx="58" cy="95" r="3" fill="#8CCB7A"></circle>
+              <circle cx="66" cy="97" r="3" fill="#8CCB7A"></circle>
+              <circle cx="63" cy="89" r="3" fill="#B7E0A4"></circle>
+            </svg>
+            <svg viewBox="0 0 120 120" width="112" height="112" aria-hidden="true" style="position: absolute; left: 0; top: 0; opacity: {{sr.l1.op}}; transform: scale({{sr.l1.sc}}); transition: opacity .25s ease, transform .25s ease">
+              <ellipse cx="80" cy="44" rx="14" ry="11" fill="#FFFDF7" transform="rotate(-20 80 44)"></ellipse>
+              <circle cx="80" cy="44" r="6" fill="#F5A623"></circle>
+            </svg>
+            <svg viewBox="0 0 120 120" width="112" height="112" aria-hidden="true" style="position: absolute; left: 0; top: 0; opacity: {{sr.l2.op}}; transform: scale({{sr.l2.sc}}); transition: opacity .25s ease, transform .25s ease">
+              <rect x="26" y="76" width="28" height="8" rx="4" fill="#2F7A45" transform="rotate(-14 40 80)"></rect>
+              <rect x="29" y="83" width="26" height="8" rx="4" fill="#4E9E5C" transform="rotate(-6 42 87)"></rect>
+              <rect x="34" y="90" width="20" height="7" rx="3.5" fill="#2F7A45" transform="rotate(4 44 93)"></rect>
+            </svg>
+            <svg viewBox="0 0 120 120" width="112" height="112" aria-hidden="true" style="position: absolute; left: 0; top: 0; opacity: {{sr.l3.op}}; transform: scale({{sr.l3.sc}}); transition: opacity .25s ease, transform .25s ease">
+              <path d="M76 68c7-4 15-1 17 6s-3 12-10 12-12-5-11-11c.4-3.2 1.6-5.6 4-7z" fill="#1F5A45"></path>
+              <path d="M80 73c3-1 6 0 7 3s-1 5-4 5" fill="none" stroke="#4E9E7C"></path>
+            </svg>
+          </sc-if>
+          <sc-if value="{{sr.notRamen}}" hint-placeholder-val="{{ false }}">
+            <svg viewBox="0 0 120 120" width="112" height="112" aria-hidden="true" style="position: absolute; left: 0; top: 0">
+              <circle cx="56" cy="58" r="54" fill="#F28A3C"></circle>
+              <circle cx="56" cy="58" r="46" fill="#FFFDF7"></circle>
+              <ellipse cx="54" cy="60" rx="30" ry="25" fill="#F7E3BD"></ellipse>
+              <rect x="34" y="48" width="24" height="11" rx="5.5" fill="#B36E36" transform="rotate(-14 46 53)"></rect>
+              <rect x="50" y="58" width="24" height="11" rx="5.5" fill="#C98144" transform="rotate(10 62 63)"></rect>
+              <rect x="38" y="66" width="20" height="9" rx="4.5" fill="#E0533F" transform="rotate(6 48 70)"></rect>
+            </svg>
+            <svg viewBox="0 0 120 120" width="112" height="112" aria-hidden="true" style="position: absolute; left: 0; top: 0; opacity: {{sr.l1.op}}; transform: scale({{sr.l1.sc}}); transition: opacity .25s ease, transform .25s ease">
+              <ellipse cx="70" cy="42" rx="14" ry="11" fill="#FFFDF7" stroke="#F1E6D6" stroke-width="1.500" transform="rotate(-20 70 42)"></ellipse>
+              <circle cx="70" cy="42" r="6" fill="#F5A623"></circle>
+            </svg>
+            <svg viewBox="0 0 120 120" width="112" height="112" aria-hidden="true" style="position: absolute; left: 0; top: 0; opacity: {{sr.l2.op}}; transform: scale({{sr.l2.sc}}); transition: opacity .25s ease, transform .25s ease">
+              <rect x="22" y="72" width="28" height="8" rx="4" fill="#2F7A45" transform="rotate(-14 36 76)"></rect>
+              <rect x="25" y="79" width="26" height="8" rx="4" fill="#4E9E5C" transform="rotate(-6 38 83)"></rect>
+              <rect x="30" y="86" width="20" height="7" rx="3.5" fill="#2F7A45" transform="rotate(4 40 89)"></rect>
+            </svg>
+            <svg viewBox="0 0 120 120" width="112" height="112" aria-hidden="true" style="position: absolute; left: 0; top: 0; opacity: {{sr.l3.op}}; transform: scale({{sr.l3.sc}}); transition: opacity .25s ease, transform .25s ease">
+              <circle cx="96" cy="94" r="20" fill="#2E2219"></circle>
+              <circle cx="96" cy="94" r="15" fill="#E9C27A"></circle>
+              <path d="M88 92c3-3 7-2 8 1s-2 6-5 5" fill="none" stroke="#1F5A45" stroke-width="3" stroke-linecap="round"></path>
+              <circle cx="102" cy="98" r="2.5" fill="#FFFDF7"></circle>
+            </svg>
+          </sc-if>
+        </div>
+        <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+          <sc-for list="{{sr.adds}}" as="a" hint-placeholder-count="3">
+            <button type="button" aria-pressed="{{a.on}}" onClick="{{a.toggle}}" style="height: 44px; box-sizing: border-box; display: flex; align-items: center; gap: 6px; padding: 0 10px; border-radius: 14px; border: 2px solid {{a.border}}; background: {{a.bg}}; color: {{a.color}}; text-align: left">
+              <sc-if value="{{a.on}}" hint-placeholder-val="{{ true }}"><svg class="ic" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" style="flex: none"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if>
+              <sc-if value="{{a.off}}" hint-placeholder-val="{{ false }}"><svg class="ic" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" style="flex: none"><path d="M12 5v14M5 12h14"></path></svg></sc-if>
+              <span style="font-size: 14px; font-weight: 700; white-space: nowrap">{{a.label}}</span>
+              <span style="margin-left: auto; font-size: 12px; font-weight: 500; white-space: nowrap">{{a.tag}}</span>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="font-family: 'Zen Maru Gothic', sans-serif; font-weight: 700; font-size: 15px; text-align: center">{{sr.msg}}</div>
+
+      <div style="display: flex; gap: 8px; align-items: flex-start; background: #FFF0C4; border-radius: 16px; padding: 9px 12px; font-size: 13px; font-weight: 500">
+        <svg class="ic" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" style="flex: none; margin-top: 1px"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"></path><path d="M19 16v4M17 18h4"></path></svg>
+        <div>{{sr.memo}}</div>
+      </div>
+
+      <div style="display: flex; gap: 8px">
+        <button type="button" aria-expanded="{{whyOpen}}" onClick="{{toggleWhy}}" style="flex: 1; height: 48px; border-radius: 999px; background: #FFFFFF; border: 2px solid #2E2219; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 6px">
+          <svg class="ic" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M9.500 9.500a2.500 2.500 0 1 1 3.500 2.300c-.7.4-1 .9-1 1.700"></path><path d="M12 17h.01"></path></svg>
+          なぜこの提案？
+        </button>
+        <sc-if value="{{canChoose}}" hint-placeholder-val="{{ true }}">
+          <button type="button" onClick="{{choose}}" style="flex: 1; height: 48px; border: 0; border-radius: 999px; background: #B4430F; color: #FFFFFF; font-size: 15px; font-weight: 700">これにする</button>
+        </sc-if>
+      </div>
+
+      <sc-if value="{{rc.show}}" hint-placeholder-val="{{ false }}">
+        <button type="button" aria-expanded="{{rc.open}}" onClick="{{rc.toggle}}" style="height: 46px; border: 0; border-radius: 999px; background: #FFEBD6; color: #2E2219; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 6px">
+          <svg class="ic" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"></path><path d="M5 17a3 3 0 0 1 3-3h11"></path><path d="M9 8h6"></path></svg>
+          {{rc.label}}
+          <span style="font-size: 12px; font-weight: 500; color: #5A4D42">{{rc.time}}</span>
+        </button>
+      </sc-if>
+
+      <sc-if value="{{whyOpen}}" hint-placeholder-val="{{ false }}">
+        <div class="rise" style="background: #FFFAF1; border-radius: 18px; padding: 12px; display: flex; flex-direction: column; gap: 8px">
+          <div style="font-family: 'Zen Maru Gothic', sans-serif; font-weight: 700; font-size: 15px">AIが考えたこと</div>
+          <sc-for list="{{sr.why}}" as="r" hint-placeholder-count="5">
+            <div style="display: flex; gap: 8px; align-items: baseline; font-size: 14px"><span style="flex: none; width: 74px; box-sizing: border-box; text-align: center; font-size: 12px; font-weight: 700; padding: 1px 0; border-radius: 999px; background: {{r.bg}}; color: {{r.fg}}">{{r.tag}}</span><span style="font-weight: 500">{{r.text}}</span></div>
+          </sc-for>
+          <div style="border-top: 1.5px dashed #D8C9B6; padding-top: 8px; font-size: 14px; font-weight: 700">{{sr.concl}}</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{rc.open}}" hint-placeholder-val="{{ false }}">
+        <div class="rise" style="background: #FFFAF1; border-radius: 18px; padding: 12px; display: flex; flex-direction: column; gap: 10px">
+          <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 8px">
+            <div style="font-family: 'Zen Maru Gothic', sans-serif; font-weight: 700; font-size: 15px">レシピ</div>
+            <div style="font-size: 12px; font-weight: 700; color: #5A4D42">{{rc.meta}}</div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 4px">
+            <div style="font-size: 12px; font-weight: 700; color: #B4430F">材料</div>
+            <sc-for list="{{rc.ings}}" as="ig" hint-placeholder-count="5">
+              <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 3px 0; border-bottom: 1.5px dashed #E6D8C5; font-size: 14px">
+                <div style="font-weight: 700">{{ig.name}}</div>
+                <div style="flex: none; font-weight: 500; color: #5A4D42">{{ig.qty}}</div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 6px">
+            <div style="font-size: 12px; font-weight: 700; color: #B4430F">作り方</div>
+            <sc-for list="{{rc.steps}}" as="sp" hint-placeholder-count="4">
+              <div style="display: flex; align-items: flex-start; gap: 8px; font-size: 14px; font-weight: 500; line-height: 1.5">
+                <div style="width: 22px; height: 22px; flex: none; border-radius: 50%; background: #F28A3C; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700">{{sp.num}}</div>
+                <div style="flex: 1; min-width: 0">{{sp.text}}</div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display: flex; gap: 8px; align-items: flex-start; background: #FFF0C4; border-radius: 14px; padding: 8px 10px; font-size: 13px; font-weight: 500">
+            <svg class="ic" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" style="flex: none; margin-top: 1px"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"></path><path d="M19 16v4M17 18h4"></path></svg>
+            <div>{{rc.tip}}</div>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{resGroup}}" hint-placeholder-val="{{ false }}">
+    <div class="rise" style="display: flex; gap: 10px; align-items: flex-start">
+      <div style="width: 36px; height: 36px; flex: none; border-radius: 50%; background: #6DB58A; color: #2E2219; display: flex; align-items: center; justify-content: center">
+        <svg class="ic" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M9 10h.01M15 10h.01"></path><path d="M8.5 14c1 1.2 2.2 1.8 3.5 1.8s2.5-.6 3.5-1.8"></path></svg>
+      </div>
+      <div style="flex: 1; min-width: 0; background: #FFFFFF; border: 1.5px solid #F1E6D6; border-radius: 6px 20px 20px 20px; padding: 12px 14px; font-size: 15px; font-weight: 500"><span style="font-weight: 700">みんなの希望から考えました。</span><br>みんなで食べられる、ひとつの献立にしたよ。</div>
+    </div>
+
+    <div class="rise" style="background: #FFFFFF; border: 2px solid #F28A3C; border-radius: 24px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+      <div>
+        <div style="display: flex; align-items: center; gap: 6px">
+          <div style="font-size: 12px; font-weight: 700; color: #B4430F">今日のみんなには</div>
+          <div style="font-size: 12px; font-weight: 700; padding: 0 8px; border-radius: 999px; background: #2E2219; color: #FFFAF1">{{g.servings}}</div>
+        </div>
+        <h2 style="margin: 0; font-family: 'Zen Maru Gothic', sans-serif; font-weight: 900; font-size: 26px; line-height: 1.25">{{g.dish}}</h2>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 10px">
+        <svg viewBox="0 0 72 72" width="104" height="104" aria-hidden="true" style="flex: none">
+          <rect x="0" y="0" width="72" height="72" rx="22" fill="#FFEBD6"></rect>
+          <circle cx="30" cy="30" r="22" fill="#F1E6D6"></circle>
+          <circle cx="30" cy="30" r="18" fill="#FFFDF7"></circle>
+          <rect x="16" y="22" width="20" height="10" rx="5" fill="#8F4F22" transform="rotate(-12 26 27)"></rect>
+          <rect x="20" y="31" width="20" height="10" rx="5" fill="#B36E36" transform="rotate(8 30 36)"></rect>
+          <circle cx="40" cy="22" r="6" fill="#6DB58A"></circle>
+          <circle cx="42" cy="30" r="4" fill="#8CCB7A"></circle>
+          <circle cx="54" cy="52" r="12" fill="#6DB58A"></circle>
+          <circle cx="54" cy="52" r="8.5" fill="#B7E0A4"></circle>
+          <circle cx="52" cy="50" r="2.5" fill="#F28A3C"></circle>
+          <circle cx="57" cy="54" r="2.5" fill="#FFFDF7"></circle>
+          <circle cx="22" cy="58" r="10" fill="#2E2219"></circle>
+          <circle cx="22" cy="58" r="7.5" fill="#FFFDF7"></circle>
+        </svg>
+        <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+          <div style="min-height: 44px; box-sizing: border-box; border-radius: 14px; background: #FFEBD6; padding: 4px 10px; display: flex; flex-direction: column; justify-content: center">
+            <div style="font-size: 12px; font-weight: 700; color: #8A3209; line-height: 1.3">主菜</div>
+            <div style="font-size: 14px; font-weight: 700; line-height: 1.35">{{g.main}}</div>
+          </div>
+          <div style="min-height: 44px; box-sizing: border-box; border-radius: 14px; background: #E1F2E5; padding: 4px 10px; display: flex; flex-direction: column; justify-content: center">
+            <div style="font-size: 12px; font-weight: 700; color: #1F5233; line-height: 1.3">副菜</div>
+            <div style="font-size: 14px; font-weight: 700; line-height: 1.35">野菜たっぷり和風サラダ</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="font-family: 'Zen Maru Gothic', sans-serif; font-weight: 700; font-size: 15px; text-align: center">みんなの「食べたい」と最近の食事から考えました</div>
+
+      <div style="display: flex; gap: 8px; align-items: flex-start; background: #E1F2E5; color: #1F5233; border-radius: 16px; padding: 9px 12px; font-size: 13px; font-weight: 700">
+        <svg class="ic" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" style="flex: none; margin-top: 1px"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
+        <div>{{g.oneNote}}</div>
+      </div>
+
+      <div style="display: flex; gap: 8px">
+        <button type="button" aria-expanded="{{whyOpen}}" onClick="{{toggleWhy}}" style="flex: 1; height: 48px; border-radius: 999px; background: #FFFFFF; border: 2px solid #2E2219; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 6px">
+          <svg class="ic" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M9.500 9.500a2.500 2.500 0 1 1 3.500 2.300c-.7.4-1 .9-1 1.700"></path><path d="M12 17h.01"></path></svg>
+          なぜこの献立？
+        </button>
+        <sc-if value="{{canChoose}}" hint-placeholder-val="{{ true }}">
+          <button type="button" onClick="{{choose}}" style="flex: 1; height: 48px; border: 0; border-radius: 999px; background: #B4430F; color: #FFFFFF; font-size: 15px; font-weight: 700">これにする</button>
+        </sc-if>
+      </div>
+
+      <sc-if value="{{rc.show}}" hint-placeholder-val="{{ false }}">
+        <button type="button" aria-expanded="{{rc.open}}" onClick="{{rc.toggle}}" style="height: 46px; border: 0; border-radius: 999px; background: #FFEBD6; color: #2E2219; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 6px">
+          <svg class="ic" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"></path><path d="M5 17a3 3 0 0 1 3-3h11"></path><path d="M9 8h6"></path></svg>
+          {{rc.label}}
+          <span style="font-size: 12px; font-weight: 500; color: #5A4D42">{{rc.time}}</span>
+        </button>
+      </sc-if>
+
+      <sc-if value="{{whyOpen}}" hint-placeholder-val="{{ false }}">
+        <div class="rise" style="background: #FFFAF1; border-radius: 18px; padding: 12px; display: flex; flex-direction: column; gap: 10px">
+          <div style="font-family: 'Zen Maru Gothic', sans-serif; font-weight: 700; font-size: 15px">AIが考えたこと</div>
+          <sc-for list="{{g.why}}" as="r" hint-placeholder-count="4">
+            <div style="display: flex; gap: 10px; align-items: flex-start; opacity: {{r.op}}">
+              <div style="width: 32px; height: 32px; flex: none; border-radius: 50%; background: {{r.color}}; display: flex; align-items: center; justify-content: center; font-family: 'Zen Maru Gothic', sans-serif; font-weight: 900; font-size: {{r.fs}}">{{r.ch}}</div>
+              <div style="flex: 1; min-width: 0">
+                <div style="font-size: 14px; font-weight: 700; line-height: 1.45">{{r.wish}}</div>
+                <sc-if value="{{r.hasNote}}" hint-placeholder-val="{{ false }}">
+                  <div style="font-size: 13px; font-weight: 700; color: #1F5233; line-height: 1.45">＋ {{r.note}}</div>
+                </sc-if>
+              </div>
+            </div>
+          </sc-for>
+          <div style="border-top: 1.5px dashed #D8C9B6; padding-top: 8px; font-size: 14px; font-weight: 700">肉料理を中心にしながら、野菜をしっかり取れる献立にしました。</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{rc.open}}" hint-placeholder-val="{{ false }}">
+        <div class="rise" style="background: #FFFAF1; border-radius: 18px; padding: 12px; display: flex; flex-direction: column; gap: 10px">
+          <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 8px">
+            <div style="font-family: 'Zen Maru Gothic', sans-serif; font-weight: 700; font-size: 15px">レシピ</div>
+            <div style="font-size: 12px; font-weight: 700; color: #5A4D42">{{rc.meta}}</div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 4px">
+            <div style="font-size: 12px; font-weight: 700; color: #B4430F">材料</div>
+            <sc-for list="{{rc.ings}}" as="ig" hint-placeholder-count="5">
+              <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 3px 0; border-bottom: 1.5px dashed #E6D8C5; font-size: 14px">
+                <div style="font-weight: 700">{{ig.name}}</div>
+                <div style="flex: none; font-weight: 500; color: #5A4D42">{{ig.qty}}</div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 6px">
+            <div style="font-size: 12px; font-weight: 700; color: #B4430F">作り方</div>
+            <sc-for list="{{rc.steps}}" as="sp" hint-placeholder-count="4">
+              <div style="display: flex; align-items: flex-start; gap: 8px; font-size: 14px; font-weight: 500; line-height: 1.5">
+                <div style="width: 22px; height: 22px; flex: none; border-radius: 50%; background: #F28A3C; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700">{{sp.num}}</div>
+                <div style="flex: 1; min-width: 0">{{sp.text}}</div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display: flex; gap: 8px; align-items: flex-start; background: #FFF0C4; border-radius: 14px; padding: 8px 10px; font-size: 13px; font-weight: 500">
+            <svg class="ic" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" style="flex: none; margin-top: 1px"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"></path><path d="M19 16v4M17 18h4"></path></svg>
+            <div>{{rc.tip}}</div>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+  </sc-if>
+
+    <sc-if value="{{loc.busy}}" hint-placeholder-val="{{ false }}">
+      <div style="background: #FFFFFF; border: 1.5px solid #F1E6D6; border-radius: 24px; padding: 16px; display: flex; align-items: center; gap: 10px">
+        <div style="width: 40px; height: 40px; flex: none; border-radius: 50%; background: #FFEBD6; color: #8A3209; display: flex; align-items: center; justify-content: center">
+          <svg class="ic" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 21s-6-5.2-6-10a6 6 0 0 1 12 0c0 4.8-6 10-6 10z"></path><circle cx="12" cy="11" r="2"></circle></svg>
+        </div>
+        <div style="flex: 1; min-width: 0; font-size: 14px; font-weight: 700">現在地の近くで、食べられる・買えるお店を探しています</div>
+        <div style="display: flex; gap: 5px; flex: none">
+          <div class="td" style="width: 8px; height: 8px; border-radius: 50%; background: #6B5D51"></div>
+          <div class="td td2" style="width: 8px; height: 8px; border-radius: 50%; background: #6B5D51"></div>
+          <div class="td td3" style="width: 8px; height: 8px; border-radius: 50%; background: #6B5D51"></div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{loc.done}}" hint-placeholder-val="{{ false }}">
+      <div class="rise" style="background: #FFFFFF; border: 1.5px solid #F1E6D6; border-radius: 24px; padding: 14px; display: flex; flex-direction: column; gap: 10px">
+        <div>
+          <div style="display: flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 700; color: #B4430F">
+            <svg class="ic" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M12 21s-6-5.2-6-10a6 6 0 0 1 12 0c0 4.8-6 10-6 10z"></path><circle cx="12" cy="11" r="2"></circle></svg>
+            現在地の近く・歩いて行ける範囲
+          </div>
+          <h2 style="margin: 0; font-family: 'Zen Maru Gothic', sans-serif; font-weight: 900; font-size: 20px; line-height: 1.35">{{loc.title}}</h2>
+          <div style="font-size: 12px; font-weight: 500; color: #5A4D42">{{loc.basis}}</div>
+        </div>
+
+        <div style="position: relative; height: 104px; border-radius: 16px; overflow: hidden; background: #EAF2E3">
+          <svg viewBox="0 0 326 104" width="100%" height="104" preserveAspectRatio="xMidYMid slice" aria-hidden="true" style="position: absolute; left: 0; top: 0">
+            <rect x="104" y="68" width="60" height="44" rx="8" fill="#CFE6C9"></rect>
+            <rect x="262" y="-8" width="72" height="24" rx="8" fill="#CFE6C9"></rect>
+            <path class="rd" d="M-10 58h346"></path>
+            <path class="rd" d="M88-10v124"></path>
+            <path class="rd" d="M176-10l72 124"></path>
+            <path class="rd2" d="M-10 24h346"></path>
+          </svg>
+          <div style="position: absolute; left: 44%; top: 56%; width: 14px; height: 14px; margin: -9px 0 0 -9px; border-radius: 50%; background: #2B6E45; border: 2px solid #FFFFFF; box-shadow: 0 0 0 6px rgba(43, 110, 69, 0.22)"></div>
+          <div style="position: absolute; left: 44%; top: 56%; margin: 12px 0 0 -22px; font-size: 12px; font-weight: 700; background: #FFFFFF; border-radius: 999px; padding: 0 6px">現在地</div>
+          <sc-for list="{{loc.shops}}" as="sh" hint-placeholder-count="3">
+            <div style="position: absolute; left: {{sh.left}}; top: {{sh.top}}; width: 28px; height: 28px; margin: -14px 0 0 -14px; box-sizing: border-box; border-radius: 50%; border: 2px solid #FFFFFF; background: {{sh.pinBg}}; color: {{sh.pinColor}}; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; transition: background .2s ease">{{sh.num}}</div>
+          </sc-for>
+        </div>
+
+        <sc-for list="{{loc.shops}}" as="sh" hint-placeholder-count="3">
+          <div style="border: 2px solid {{sh.border}}; border-radius: 18px; overflow: hidden">
+            <button type="button" aria-expanded="{{sh.open}}" onClick="{{sh.pick}}" style="width: 100%; min-height: 64px; box-sizing: border-box; border: 0; background: transparent; padding: 8px 10px; display: flex; align-items: center; gap: 10px; text-align: left">
+              <div style="width: 28px; height: 28px; flex: none; border-radius: 50%; background: {{sh.pinBg}}; color: {{sh.pinColor}}; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700">{{sh.num}}</div>
+              <div style="flex: 1; min-width: 0">
+                <div style="display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; column-gap: 8px">
+                  <div style="font-family: 'Zen Maru Gothic', sans-serif; font-weight: 700; font-size: 16px">{{sh.name}}</div>
+                  <div style="font-size: 12px; font-weight: 500; color: #5A4D42">{{sh.meta}}</div>
+                </div>
+                <div style="display: flex; flex-wrap: wrap; align-items: center; column-gap: 6px; row-gap: 2px; margin-top: 2px"><div style="flex: none; font-size: 12px; font-weight: 700; padding: 0 8px; border-radius: 999px; background: {{sh.kindBg}}; color: {{sh.kindFg}}">{{sh.kind}}</div><div style="font-size: 13px; font-weight: 700; color: #B4430F">{{sh.match}}</div></div>
+              </div>
+            </button>
+            <sc-if value="{{sh.open}}" hint-placeholder-val="{{ false }}">
+              <div style="padding: 0 10px 10px; display: flex; flex-direction: column; gap: 8px">
+                <div style="background: #FFFAF1; border-radius: 14px; padding: 8px 10px">
+                  <div style="font-size: 12px; font-weight: 700; color: #5A4D42">{{sh.orderLabel}}</div>
+                  <div style="font-size: 14px; font-weight: 700">{{sh.order}}</div>
+                  <div style="font-size: 12px; font-weight: 500; color: #1F5233">{{sh.note}}</div>
+                </div>
+                <sc-if value="{{sh.canGo}}" hint-placeholder-val="{{ true }}">
+                  <button type="button" onClick="{{sh.go}}" style="height: 44px; border: 0; border-radius: 999px; background: #B4430F; color: #FFFFFF; font-size: 15px; font-weight: 700">{{sh.cta}}</button>
+                </sc-if>
+                <sc-if value="{{sh.gone}}" hint-placeholder-val="{{ false }}">
+                  <div class="rise" style="background: #E1F2E5; color: #1F5233; border-radius: 14px; padding: 8px 10px; font-size: 13px; font-weight: 700">いってらっしゃい。食べたあとの感想を、次のお店選びに活かすね。</div>
+                </sc-if>
+              </div>
+            </sc-if>
+          </div>
+        </sc-for>
+
+        <div style="font-size: 12px; font-weight: 500; color: #5A4D42">※お店と距離はデモ用のサンプルです</div>
+      </div>
+    </sc-if>
+
+  <sc-if value="{{chosen}}" hint-placeholder-val="{{ false }}">
+    <div class="rise" style="display: flex; gap: 8px; align-items: center; font-size: 14px; font-weight: 700">
+      <div style="width: 24px; height: 24px; flex: none; border-radius: 50%; background: #2B6E45; color: #FFFFFF; display: flex; align-items: center; justify-content: center">
+        <svg class="ic" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
+      </div>
+      <div>{{doneLine}}</div>
+    </div>
+
+    <div class="rise" style="display: flex; align-items: center; gap: 10px">
+      <div style="flex: 1; height: 1.5px; background: #EADCC8"></div>
+      <div style="font-size: 12px; font-weight: 700; color: #5A4D42">食べたあと</div>
+      <div style="flex: 1; height: 1.5px; background: #EADCC8"></div>
+    </div>
+
+    <div class="rise" style="background: #FFFFFF; border: 1.5px solid #F1E6D6; border-radius: 24px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+      <h2 style="margin: 0; font-family: 'Zen Maru Gothic', sans-serif; font-weight: 900; font-size: 20px; line-height: 1.35">今日のごはん、どうだった？</h2>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+        <sc-for list="{{fb.opts}}" as="o" hint-placeholder-count="4">
+          <button type="button" aria-pressed="{{o.on}}" onClick="{{o.pick}}" style="height: 48px; box-sizing: border-box; border-radius: 16px; border: 2px solid {{o.border}}; background: {{o.bg}}; font-size: 14px; font-weight: 700">{{o.label}}</button>
+        </sc-for>
+      </div>
+      <sc-if value="{{fb.none}}" hint-placeholder-val="{{ true }}">
+        <div style="font-size: 12px; font-weight: 500; color: #5A4D42; text-align: center">ワンタップでOK。次の提案に活かします。</div>
+      </sc-if>
+      <sc-if value="{{fb.done}}" hint-placeholder-val="{{ false }}">
+        <div class="rise" style="background: #E1F2E5; color: #1F5233; border-radius: 16px; padding: 10px 12px; font-size: 14px; font-weight: 500"><span style="font-weight: 700">ありがとう。次の提案に活かします。</span><br>{{fb.reply}}</div>
+        <button type="button" onClick="{{restart}}" style="height: 46px; border-radius: 999px; background: #FFFFFF; border: 2px solid #2E2219; font-size: 14px; font-weight: 700">ホームにもどる</button>
+      </sc-if>
+    </div>
+  </sc-if>
+
+</div>
+</sc-if>
+
+<sc-if value="{{isHistory}}" hint-placeholder-val="{{ false }}">
+<div class="sc" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; overflow-y: auto; box-sizing: border-box; padding: 4px 16px 20px; display: flex; flex-direction: column; gap: 12px">
+  <h1 style="margin: 0; font-family: 'Zen Maru Gothic', sans-serif; font-weight: 900; font-size: 26px; line-height: 1.3">最近のごはん</h1>
+
+  <div style="display: flex; gap: 10px; align-items: flex-start">
+    <div style="width: 36px; height: 36px; flex: none; border-radius: 50%; background: #6DB58A; color: #2E2219; display: flex; align-items: center; justify-content: center">
+      <svg class="ic" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M9 10h.01M15 10h.01"></path><path d="M8.5 14c1 1.2 2.2 1.8 3.5 1.8s2.5-.6 3.5-1.8"></path></svg>
+    </div>
+    <div style="flex: 1; min-width: 0; background: #FFFFFF; border: 1.5px solid #F1E6D6; border-radius: 6px 20px 20px 20px; padding: 11px 14px; font-size: 15px; font-weight: 500">最近ラーメン多めだね。好きなんだなって、ちゃんと覚えてるよ。</div>
+  </div>
+
+  <sc-for list="{{hist.days}}" as="d" hint-placeholder-count="3">
+    <div style="background: #FFFFFF; border: 1.5px solid {{d.border}}; border-radius: 20px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px">
+      <div style="font-family: 'Zen Maru Gothic', sans-serif; font-weight: 700; font-size: 16px; line-height: 1.3">{{d.when}}</div>
+
+      <div style="display: flex; align-items: flex-start; gap: 10px; padding-top: 8px; border-top: 1.5px solid #F6EEE2">
+        <div style="width: 52px; flex: none; box-sizing: border-box; text-align: center; font-size: 12px; font-weight: 700; padding: 2px 0; border-radius: 999px; background: #FFF0C4; color: #5A4D42">朝</div>
+        <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+          <div style="font-size: 14px; font-weight: {{d.am.w}}; color: {{d.am.fg}}; line-height: 1.5">{{d.am.dish}}</div>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap">
+            <sc-if value="{{d.am.hasFam}}" hint-placeholder-val="{{ false }}"><div style="font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; background: #E1F2E5; color: #1F5233">{{d.am.fam}}</div></sc-if>
+            <sc-if value="{{d.am.hasFb}}" hint-placeholder-val="{{ false }}"><div style="font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; background: #FFF0C4; color: #5A4D42">「{{d.am.fb}}」</div></sc-if>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; align-items: flex-start; gap: 10px; padding-top: 8px; border-top: 1.5px solid #F6EEE2">
+        <div style="width: 52px; flex: none; box-sizing: border-box; text-align: center; font-size: 12px; font-weight: 700; padding: 2px 0; border-radius: 999px; background: #FFEBD6; color: #8A3209">昼</div>
+        <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+          <div style="font-size: 14px; font-weight: {{d.noon.w}}; color: {{d.noon.fg}}; line-height: 1.5">{{d.noon.dish}}</div>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap">
+            <sc-if value="{{d.noon.hasFam}}" hint-placeholder-val="{{ false }}"><div style="font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; background: #E1F2E5; color: #1F5233">{{d.noon.fam}}</div></sc-if>
+            <sc-if value="{{d.noon.hasFb}}" hint-placeholder-val="{{ false }}"><div style="font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; background: #FFF0C4; color: #5A4D42">「{{d.noon.fb}}」</div></sc-if>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; align-items: flex-start; gap: 10px; padding-top: 8px; border-top: 1.5px solid #F6EEE2">
+        <div style="width: 52px; flex: none; box-sizing: border-box; text-align: center; font-size: 12px; font-weight: 700; padding: 2px 0; border-radius: 999px; background: #2E2219; color: #FFFAF1">夜</div>
+        <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+          <sc-if value="{{d.pm.shown}}" hint-placeholder-val="{{ true }}">
+            <div style="font-size: 14px; font-weight: {{d.pm.w}}; color: {{d.pm.fg}}; line-height: 1.5">{{d.pm.dish}}</div>
+          </sc-if>
+          <sc-if value="{{d.pm.todo}}" hint-placeholder-val="{{ false }}">
+            <button type="button" onClick="{{d.pm.go}}" style="min-height: 44px; box-sizing: border-box; border: 2px dashed #D8C9B6; border-radius: 14px; background: transparent; padding: 6px 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px; text-align: left; font-size: 13px; font-weight: 700">
+              まだ。ホームで一緒に考えよう
+              <svg class="ic" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" style="flex: none"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+            </button>
+          </sc-if>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap">
+            <sc-if value="{{d.pm.hasFam}}" hint-placeholder-val="{{ false }}"><div style="font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; background: #E1F2E5; color: #1F5233">{{d.pm.fam}}</div></sc-if>
+            <sc-if value="{{d.pm.hasFb}}" hint-placeholder-val="{{ false }}"><div style="font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; background: #FFF0C4; color: #5A4D42">「{{d.pm.fb}}」</div></sc-if>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; align-items: flex-start; gap: 10px; padding-top: 8px; border-top: 1.5px solid #F6EEE2">
+        <div style="width: 52px; flex: none; box-sizing: border-box; text-align: center; font-size: 12px; font-weight: 700; padding: 2px 0; border-radius: 999px; background: #FFE3DE; color: #8F2A1E">おやつ</div>
+        <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+          <div style="font-size: 14px; font-weight: {{d.snack.w}}; color: {{d.snack.fg}}; line-height: 1.5">{{d.snack.dish}}</div>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap">
+            <sc-if value="{{d.snack.hasFam}}" hint-placeholder-val="{{ false }}"><div style="font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; background: #E1F2E5; color: #1F5233">{{d.snack.fam}}</div></sc-if>
+            <sc-if value="{{d.snack.hasFb}}" hint-placeholder-val="{{ false }}"><div style="font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; background: #FFF0C4; color: #5A4D42">「{{d.snack.fb}}」</div></sc-if>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{isMe}}" hint-placeholder-val="{{ false }}">
+<div class="sc" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; overflow-y: auto; box-sizing: border-box; padding: 4px 16px 20px; display: flex; flex-direction: column; gap: 12px">
+  <div>
+    <h1 style="margin: 0; font-family: 'Zen Maru Gothic', sans-serif; font-weight: 900; font-size: 26px; line-height: 1.3">AIが知っている、わたし</h1>
+  </div>
+
+  <div style="background: #FFFFFF; border: 1.5px solid #F1E6D6; border-radius: 22px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px">
+    <div style="font-size: 13px; font-weight: 700; color: #5A4D42">好み</div>
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <div style="font-size: 15px; font-weight: 700">辛い</div>
+      <div role="img" aria-label="5段階中4" style="font-size: 20px; line-height: 1; letter-spacing: 3px"><span style="color: #E0652B">★★★★</span><span style="color: #E3D5C1">★</span></div>
+    </div>
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <div style="font-size: 15px; font-weight: 700">甘い</div>
+      <div role="img" aria-label="5段階中3" style="font-size: 20px; line-height: 1; letter-spacing: 3px"><span style="color: #E0652B">★★★</span><span style="color: #E3D5C1">★★</span></div>
+    </div>
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <div style="font-size: 15px; font-weight: 700">濃い味</div>
+      <div role="img" aria-label="5段階中4" style="font-size: 20px; line-height: 1; letter-spacing: 3px"><span style="color: #E0652B">★★★★</span><span style="color: #E3D5C1">★</span></div>
+    </div>
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <div style="font-size: 15px; font-weight: 700">さっぱり</div>
+      <div role="img" aria-label="5段階中2" style="font-size: 20px; line-height: 1; letter-spacing: 3px"><span style="color: #E0652B">★★</span><span style="color: #E3D5C1">★★★</span></div>
+    </div>
+  </div>
+
+  <div style="background: #FFFFFF; border: 1.5px solid #F1E6D6; border-radius: 22px; padding: 14px 16px; display: flex; flex-direction: column; gap: 12px">
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <div style="font-size: 13px; font-weight: 700; color: #5A4D42">好きなもの</div>
+      <div style="display: flex; gap: 6px; flex-wrap: wrap">
+        <div style="font-size: 14px; font-weight: 700; padding: 5px 12px; border-radius: 999px; background: #FFEBD6">ラーメン</div>
+        <div style="font-size: 14px; font-weight: 700; padding: 5px 12px; border-radius: 999px; background: #FFEBD6">韓国料理</div>
+        <div style="font-size: 14px; font-weight: 700; padding: 5px 12px; border-radius: 999px; background: #FFEBD6">鶏肉</div>
+        <div style="font-size: 14px; font-weight: 700; padding: 5px 12px; border-radius: 999px; background: #FFEBD6">卵料理</div>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <div style="font-size: 13px; font-weight: 700; color: #5A4D42">苦手なもの</div>
+      <div style="display: flex; gap: 6px; flex-wrap: wrap">
+        <div style="font-size: 14px; font-weight: 700; padding: 4px 12px; border-radius: 999px; background: #FFFFFF; border: 1.5px dashed #9C8B78">パクチー</div>
+        <div style="font-size: 14px; font-weight: 700; padding: 4px 12px; border-radius: 999px; background: #FFFFFF; border: 1.5px dashed #9C8B78">生のトマト</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+    <div style="background: #E1F2E5; border-radius: 22px; padding: 14px; display: flex; flex-direction: column; gap: 4px">
+      <div style="font-size: 13px; font-weight: 700; color: #1F5233">今の目標</div>
+      <div style="font-family: 'Zen Maru Gothic', sans-serif; font-weight: 700; font-size: 15px; line-height: 1.45">無理せず栄養バランスを改善したい</div>
+    </div>
+    <div style="background: #FFEBD6; border-radius: 22px; padding: 14px; display: flex; flex-direction: column; gap: 4px">
+      <div style="font-size: 13px; font-weight: 700; color: #8A3209">最近の傾向</div>
+      <div style="font-family: 'Zen Maru Gothic', sans-serif; font-weight: 700; font-size: 15px; line-height: 1.45">野菜と鉄分が不足しやすい</div>
+    </div>
+  </div>
+
+  <div style="background: #FFFFFF; border: 1.5px solid #F1E6D6; border-radius: 22px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px">
+    <div style="font-size: 13px; font-weight: 700; color: #5A4D42">最近、AIが覚えたこと</div>
+    <sc-for list="{{me.learned}}" as="l" hint-placeholder-count="2">
+      <div style="display: flex; gap: 10px; align-items: flex-start">
+        <div style="width: 44px; flex: none; font-size: 12px; font-weight: 700; color: {{l.whenFg}}; padding-top: 2px">{{l.when}}</div>
+        <div style="flex: 1; min-width: 0">
+          <div style="font-size: 14px; font-weight: 700; line-height: 1.45">{{l.text}}</div>
+          <div style="font-size: 13px; font-weight: 500; color: #1F5233; line-height: 1.45">{{l.effect}}</div>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+
+  <div style="display: flex; gap: 8px; align-items: flex-start; font-size: 13px; font-weight: 500; color: #5A4D42; padding: 0 4px">
+    <svg class="ic" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" style="flex: none; margin-top: 1px"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"></path><path d="M19 16v4M17 18h4"></path></svg>
+    <div>食べたものや選んだ料理から、AIが少しずつあなたを理解していきます。</div>
+  </div>
+</div>
+</sc-if>
+
+</div>
+
+<nav aria-label="メイン" style="height: 72px; flex: none; box-sizing: border-box; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); background: #FFFFFF; border-top: 1.5px solid #F1E6D6; padding: 6px 8px 8px">
+  <button type="button" aria-current="{{nav.home.cur}}" onClick="{{nav.home.go}}" style="border: 0; background: transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; color: {{nav.home.color}}; font-size: 12px; font-weight: {{nav.home.weight}}">
+    <div style="width: 56px; height: 30px; border-radius: 999px; background: {{nav.home.pill}}; display: flex; align-items: center; justify-content: center"><svg class="ic" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"></path></svg></div>
+    ホーム
+  </button>
+  <button type="button" aria-current="{{nav.history.cur}}" onClick="{{nav.history.go}}" style="border: 0; background: transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; color: {{nav.history.color}}; font-size: 12px; font-weight: {{nav.history.weight}}">
+    <div style="width: 56px; height: 30px; border-radius: 999px; background: {{nav.history.pill}}; display: flex; align-items: center; justify-content: center"><svg class="ic" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="8.500"></circle><path d="M12 7.500V12l3 2"></path></svg></div>
+    履歴
+  </button>
+  <button type="button" aria-current="{{nav.me.cur}}" onClick="{{nav.me.go}}" style="border: 0; background: transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; color: {{nav.me.color}}; font-size: 12px; font-weight: {{nav.me.weight}}">
+    <div style="width: 56px; height: 30px; border-radius: 999px; background: {{nav.me.pill}}; display: flex; align-items: center; justify-content: center"><svg class="ic" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6"></path></svg></div>
+    わたし
+  </button>
+</nav>
+
+</div>
+</template>
+<script>/* Preact 10 (MIT License) https://preactjs.com */
+!function(n){"function"==typeof define&&define.amd?define(n):n()}(function(){var n,l,t,u,i,o,e,r,f,c,s,a,h,p=65536,v=1<<17,d={},y=[],w=/acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|itera/i,_=Array.isArray;function g(n,l){for(var t in l)n[t]=l[t];return n}function m(n){n&&n.parentNode&&n.parentNode.removeChild(n)}function b(l,t,u){var i,o,e,r={};for(e in t)"key"==e?i=t[e]:"ref"==e?o=t[e]:r[e]=t[e];if(arguments.length>2&&(r.children=arguments.length>3?n.call(arguments,2):u),"function"==typeof l&&null!=l.defaultProps)for(e in l.defaultProps)void 0===r[e]&&(r[e]=l.defaultProps[e]);return k(l,r,i,o,null)}function k(n,u,i,o,e){var r={type:n,props:u,key:i,ref:o,__k:null,__:null,__b:0,__e:null,__d:void 0,__c:null,constructor:void 0,__v:null==e?++t:e,__i:-1,__u:0};return null==e&&null!=l.vnode&&l.vnode(r),r}function C(n){return n.children}function x(n,l){this.props=n,this.context=l}function S(n,l){if(null==l)return n.__?S(n.__,n.__i+1):null;for(var t;l<n.__k.length;l++)if(null!=(t=n.__k[l])&&null!=t.__e)return t.__e;return"function"==typeof n.type?S(n):null}function M(n){var l,t;if(null!=(n=n.__)&&null!=n.__c){for(n.__e=n.__c.base=null,l=0;l<n.__k.length;l++)if(null!=(t=n.__k[l])&&null!=t.__e){n.__e=n.__c.base=t.__e;break}return M(n)}}function P(n){(!n.__d&&(n.__d=!0)&&i.push(n)&&!$.__r++||o!==l.debounceRendering)&&((o=l.debounceRendering)||e)($)}function $(){var n,t,u,o,e,f,c,s;for(i.sort(r);n=i.shift();)n.__d&&(t=i.length,o=void 0,f=(e=(u=n).__v).__e,c=[],s=[],u.__P&&((o=g({},e)).__v=e.__v+1,l.vnode&&l.vnode(o),O(u.__P,o,e,u.__n,u.__P.namespaceURI,32&e.__u?[f]:null,c,null==f?S(e):f,!!(32&e.__u),s),o.__v=e.__v,o.__.__k[o.__i]=o,V(c,o,s),o.__e!=f&&M(o)),i.length>t&&i.sort(r));$.__r=0}function I(n,l,t,u,i,o,e,r,f,c,s){var a,h,v,w,_,g=u&&u.__k||y,m=l.length;for(t.__d=f,A(t,l,g),f=t.__d,a=0;a<m;a++)null!=(v=t.__k[a])&&(h=-1===v.__i?d:g[v.__i]||d,v.__i=a,O(n,v,h,i,o,e,r,f,c,s),w=v.__e,v.ref&&h.ref!=v.ref&&(h.ref&&z(h.ref,null,v),s.push(v.ref,v.__c||w,v)),null==_&&null!=w&&(_=w),v.__u&p||h.__k===v.__k?f=E(v,f,n):"function"==typeof v.type&&void 0!==v.__d?f=v.__d:w&&(f=w.nextSibling),v.__d=void 0,v.__u&=-196609);t.__d=f,t.__e=_}function A(n,l,t){var u,i,o,e,r,f=l.length,c=t.length,s=c,a=0;for(n.__k=[],u=0;u<f;u++)null!=(i=l[u])&&"boolean"!=typeof i&&"function"!=typeof i?(e=u+a,(i=n.__k[u]="string"==typeof i||"number"==typeof i||"bigint"==typeof i||i.constructor==String?k(null,i,null,null,null):_(i)?k(C,{children:i},null,null,null):void 0===i.constructor&&i.__b>0?k(i.type,i.props,i.key,i.ref?i.ref:null,i.__v):i).__=n,i.__b=n.__b+1,o=null,-1!==(r=i.__i=F(i,t,e,s))&&(s--,(o=t[r])&&(o.__u|=v)),null==o||null===o.__v?(-1==r&&a--,"function"!=typeof i.type&&(i.__u|=p)):r!==e&&(r==e-1?a--:r==e+1?a++:(r>e?a--:a++,i.__u|=p))):i=n.__k[u]=null;if(s)for(u=0;u<c;u++)null!=(o=t[u])&&0==(o.__u&v)&&(o.__e==n.__d&&(n.__d=S(o)),N(o,o))}function E(n,l,t){var u,i;if("function"==typeof n.type){for(u=n.__k,i=0;u&&i<u.length;i++)u[i]&&(u[i].__=n,l=E(u[i],l,t));return l}n.__e!=l&&(l&&n.type&&!t.contains(l)&&(l=S(n)),t.insertBefore(n.__e,l||null),l=n.__e);do{l=l&&l.nextSibling}while(null!=l&&8===l.nodeType);return l}function F(n,l,t,u){var i=n.key,o=n.type,e=t-1,r=t+1,f=l[t];if(null===f||f&&i==f.key&&o===f.type&&0==(f.__u&v))return t;if(u>(null!=f&&0==(f.__u&v)?1:0))for(;e>=0||r<l.length;){if(e>=0){if((f=l[e])&&0==(f.__u&v)&&i==f.key&&o===f.type)return e;e--}if(r<l.length){if((f=l[r])&&0==(f.__u&v)&&i==f.key&&o===f.type)return r;r++}}return-1}function H(n,l,t){"-"===l[0]?n.setProperty(l,null==t?"":t):n[l]=null==t?"":"number"!=typeof t||w.test(l)?t:t+"px"}function L(n,l,t,u,i){var o;n:if("style"===l)if("string"==typeof t)n.style.cssText=t;else{if("string"==typeof u&&(n.style.cssText=u=""),u)for(l in u)t&&l in t||H(n.style,l,"");if(t)for(l in t)u&&t[l]===u[l]||H(n.style,l,t[l])}else if("o"===l[0]&&"n"===l[1])o=l!==(l=l.replace(/(PointerCapture)$|Capture$/i,"$1")),l=l.toLowerCase()in n||"onFocusOut"===l||"onFocusIn"===l?l.toLowerCase().slice(2):l.slice(2),n.l||(n.l={}),n.l[l+o]=t,t?u?t.t=u.t:(t.t=f,n.addEventListener(l,o?s:c,o)):n.removeEventListener(l,o?s:c,o);else{if("http://www.w3.org/2000/svg"==i)l=l.replace(/xlink(H|:h)/,"h").replace(/sName$/,"s");else if("width"!=l&&"height"!=l&&"href"!=l&&"list"!=l&&"form"!=l&&"tabIndex"!=l&&"download"!=l&&"rowSpan"!=l&&"colSpan"!=l&&"role"!=l&&"popover"!=l&&l in n)try{n[l]=null==t?"":t;break n}catch(n){}"function"==typeof t||(null==t||!1===t&&"-"!==l[4]?n.removeAttribute(l):n.setAttribute(l,"popover"==l&&1==t?"":t))}}function T(n){return function(t){if(this.l){var u=this.l[t.type+n];if(null==t.u)t.u=f++;else if(t.u<u.t)return;return u(l.event?l.event(t):t)}}}function O(n,t,u,i,o,e,r,f,c,s){var a,h,p,v,d,y,w,m,b,k,S,M,P,$,A,E,F=t.type;if(void 0!==t.constructor)return null;128&u.__u&&(c=!!(32&u.__u),e=[f=t.__e=u.__e]),(a=l.__b)&&a(t);n:if("function"==typeof F)try{if(m=t.props,b="prototype"in F&&F.prototype.render,k=(a=F.contextType)&&i[a.__c],S=a?k?k.props.value:a.__:i,u.__c?w=(h=t.__c=u.__c).__=h.__E:(b?t.__c=h=new F(m,S):(t.__c=h=new x(m,S),h.constructor=F,h.render=R),k&&k.sub(h),h.props=m,h.state||(h.state={}),h.context=S,h.__n=i,p=h.__d=!0,h.__h=[],h._sb=[]),b&&null==h.__s&&(h.__s=h.state),b&&null!=F.getDerivedStateFromProps&&(h.__s==h.state&&(h.__s=g({},h.__s)),g(h.__s,F.getDerivedStateFromProps(m,h.__s))),v=h.props,d=h.state,h.__v=t,p)b&&null==F.getDerivedStateFromProps&&null!=h.componentWillMount&&h.componentWillMount(),b&&null!=h.componentDidMount&&h.__h.push(h.componentDidMount);else{if(b&&null==F.getDerivedStateFromProps&&m!==v&&null!=h.componentWillReceiveProps&&h.componentWillReceiveProps(m,S),!h.__e&&(null!=h.shouldComponentUpdate&&!1===h.shouldComponentUpdate(m,h.__s,S)||t.__v===u.__v)){for(t.__v!==u.__v&&(h.props=m,h.state=h.__s,h.__d=!1),t.__e=u.__e,t.__k=u.__k,t.__k.some(function(n){n&&(n.__=t)}),M=0;M<h._sb.length;M++)h.__h.push(h._sb[M]);h._sb=[],h.__h.length&&r.push(h);break n}null!=h.componentWillUpdate&&h.componentWillUpdate(m,h.__s,S),b&&null!=h.componentDidUpdate&&h.__h.push(function(){h.componentDidUpdate(v,d,y)})}if(h.context=S,h.props=m,h.__P=n,h.__e=!1,P=l.__r,$=0,b){for(h.state=h.__s,h.__d=!1,P&&P(t),a=h.render(h.props,h.state,h.context),A=0;A<h._sb.length;A++)h.__h.push(h._sb[A]);h._sb=[]}else do{h.__d=!1,P&&P(t),a=h.render(h.props,h.state,h.context),h.state=h.__s}while(h.__d&&++$<25);h.state=h.__s,null!=h.getChildContext&&(i=g(g({},i),h.getChildContext())),b&&!p&&null!=h.getSnapshotBeforeUpdate&&(y=h.getSnapshotBeforeUpdate(v,d)),I(n,_(E=null!=a&&a.type===C&&null==a.key?a.props.children:a)?E:[E],t,u,i,o,e,r,f,c,s),h.base=t.__e,t.__u&=-161,h.__h.length&&r.push(h),w&&(h.__E=h.__=null)}catch(n){if(t.__v=null,c||null!=e){for(t.__u|=c?160:128;f&&8===f.nodeType&&f.nextSibling;)f=f.nextSibling;e[e.indexOf(f)]=null,t.__e=f}else t.__e=u.__e,t.__k=u.__k;l.__e(n,t,u)}else null==e&&t.__v===u.__v?(t.__k=u.__k,t.__e=u.__e):t.__e=j(u.__e,t,u,i,o,e,r,c,s);(a=l.diffed)&&a(t)}function V(n,t,u){t.__d=void 0;for(var i=0;i<u.length;i++)z(u[i],u[++i],u[++i]);l.__c&&l.__c(t,n),n.some(function(t){try{n=t.__h,t.__h=[],n.some(function(n){n.call(t)})}catch(n){l.__e(n,t.__v)}})}function j(t,u,i,o,e,r,f,c,s){var a,h,p,v,y,w,g,b=i.props,k=u.props,C=u.type;if("svg"===C?e="http://www.w3.org/2000/svg":"math"===C?e="http://www.w3.org/1998/Math/MathML":e||(e="http://www.w3.org/1999/xhtml"),null!=r)for(a=0;a<r.length;a++)if((y=r[a])&&"setAttribute"in y==!!C&&(C?y.localName===C:3===y.nodeType)){t=y,r[a]=null;break}if(null==t){if(null===C)return document.createTextNode(k);t=document.createElementNS(e,C,k.is&&k),c&&(l.__m&&l.__m(u,r),c=!1),r=null}if(null===C)b===k||c&&t.data===k||(t.data=k);else{if(r=r&&n.call(t.childNodes),b=i.props||d,!c&&null!=r)for(b={},a=0;a<t.attributes.length;a++)b[(y=t.attributes[a]).name]=y.value;for(a in b)if(y=b[a],"children"==a);else if("dangerouslySetInnerHTML"==a)p=y;else if(!(a in k)){if("value"==a&&"defaultValue"in k||"checked"==a&&"defaultChecked"in k)continue;L(t,a,null,y,e)}for(a in k)y=k[a],"children"==a?v=y:"dangerouslySetInnerHTML"==a?h=y:"value"==a?w=y:"checked"==a?g=y:c&&"function"!=typeof y||b[a]===y||L(t,a,y,b[a],e);if(h)c||p&&(h.__html===p.__html||h.__html===t.innerHTML)||(t.innerHTML=h.__html),u.__k=[];else if(p&&(t.innerHTML=""),I(t,_(v)?v:[v],u,i,o,"foreignObject"===C?"http://www.w3.org/1999/xhtml":e,r,f,r?r[0]:i.__k&&S(i,0),c,s),null!=r)for(a=r.length;a--;)m(r[a]);c||(a="value","progress"===C&&null==w?t.removeAttribute("value"):void 0!==w&&(w!==t[a]||"progress"===C&&!w||"option"===C&&w!==b[a])&&L(t,a,w,b[a],e),a="checked",void 0!==g&&g!==t[a]&&L(t,a,g,b[a],e))}return t}function z(n,t,u){try{if("function"==typeof n){var i="function"==typeof n.__u;i&&n.__u(),i&&null==t||(n.__u=n(t))}else n.current=t}catch(n){l.__e(n,u)}}function N(n,t,u){var i,o;if(l.unmount&&l.unmount(n),(i=n.ref)&&(i.current&&i.current!==n.__e||z(i,null,t)),null!=(i=n.__c)){if(i.componentWillUnmount)try{i.componentWillUnmount()}catch(n){l.__e(n,t)}i.base=i.__P=null}if(i=n.__k)for(o=0;o<i.length;o++)i[o]&&N(i[o],t,u||"function"!=typeof n.type);u||m(n.__e),n.__c=n.__=n.__e=n.__d=void 0}function R(n,l,t){return this.constructor(n,t)}function q(t,u,i){var o,e,r,f;l.__&&l.__(t,u),e=(o="function"==typeof i)?null:i&&i.__k||u.__k,r=[],f=[],O(u,t=(!o&&i||u).__k=b(C,null,[t]),e||d,d,u.namespaceURI,!o&&i?[i]:e?null:u.firstChild?n.call(u.childNodes):null,r,!o&&i?i:e?e.__e:u.firstChild,o,f),V(r,t,f)}n=y.slice,l={__e:function(n,l,t,u){for(var i,o,e;l=l.__;)if((i=l.__c)&&!i.__)try{if((o=i.constructor)&&null!=o.getDerivedStateFromError&&(i.setState(o.getDerivedStateFromError(n)),e=i.__d),null!=i.componentDidCatch&&(i.componentDidCatch(n,u||{}),e=i.__d),e)return i.__E=i}catch(l){n=l}throw n}},t=0,u=function(n){return null!=n&&null==n.constructor},x.prototype.setState=function(n,l){var t;t=null!=this.__s&&this.__s!==this.state?this.__s:this.__s=g({},this.state),"function"==typeof n&&(n=n(g({},t),this.props)),n&&g(t,n),null!=n&&this.__v&&(l&&this._sb.push(l),P(this))},x.prototype.forceUpdate=function(n){this.__v&&(this.__e=!0,n&&this.__h.push(n),P(this))},x.prototype.render=C,i=[],e="function"==typeof Promise?Promise.prototype.then.bind(Promise.resolve()):setTimeout,r=function(n,l){return n.__v.__b-l.__v.__b},$.__r=0,f=0,c=T(!1),s=T(!0),a=0,h={__proto__:null,render:q,hydrate:function n(l,t){q(l,t,n)},createElement:b,h:b,Fragment:C,createRef:function(){return{current:null}},isValidElement:u,Component:x,cloneElement:function(l,t,u){var i,o,e,r,f=g({},l.props);for(e in l.type&&l.type.defaultProps&&(r=l.type.defaultProps),t)"key"==e?i=t[e]:"ref"==e?o=t[e]:f[e]=void 0===t[e]&&void 0!==r?r[e]:t[e];return arguments.length>2&&(f.children=arguments.length>3?n.call(arguments,2):u),k(l.type,f,i||l.key,o||l.ref,null)},createContext:function(n,l){var t={__c:l="__cC"+a++,__:n,Consumer:function(n,l){return n.children(l)},Provider:function(n){var t,u;return this.getChildContext||(t=new Set,(u={})[l]=this,this.getChildContext=function(){return u},this.componentWillUnmount=function(){t=null},this.shouldComponentUpdate=function(n){this.props.value!==n.value&&t.forEach(function(n){n.__e=!0,P(n)})},this.sub=function(n){t.add(n);var l=n.componentWillUnmount;n.componentWillUnmount=function(){t&&t.delete(n),l&&l.call(n)}}),n.children}};return t.Provider.__=t.Consumer.contextType=t},toChildArray:function n(l,t){return t=t||[],null==l||"boolean"==typeof l||(_(l)?l.some(function(l){n(l,t)}):t.push(l)),t},options:l},typeof module<"u"?module.exports=h:self.preact=h});
+
+</script>
+<script>
+(function () {
+  var h = preact.h, Fragment = preact.Fragment;
+  var HOLE = /\{\{\s*([^}]+?)\s*\}\}/g;
+  var WHOLE = /^\s*\{\{\s*([^}]+?)\s*\}\}\s*$/;
+  var ATTR = { onclick: 'onClick', onchange: 'onInput', onkeydown: 'onKeyDown' };
+
+  function get(scope, p) {
+    if (p === 'true') return true;
+    if (p === 'false') return false;
+    var parts = p.split('.'), v = scope;
+    for (var i = 0; i < parts.length; i++) { if (v == null) return undefined; v = v[parts[i]]; }
+    return v;
+  }
+  function interp(str, scope) {
+    var m = str.match(WHOLE);
+    if (m) return get(scope, m[1]);
+    return str.replace(HOLE, function (_, p) { var v = get(scope, p); return v == null || v === false ? '' : v; });
+  }
+  function compile(node) {
+    if (node.nodeType === 3) {
+      var s = node.nodeValue;
+      if (!/\S/.test(s)) return null;
+      s = s.replace(/\s+/g, ' ');
+      return { t: 'text', s: s, hole: s.indexOf('{{') >= 0 };
+    }
+    if (node.nodeType !== 1) return null;
+    var tag = node.localName, kids = [];
+    for (var c = node.firstChild; c; c = c.nextSibling) { var k = compile(c); if (k) kids.push(k); }
+    if (tag === 'sc-if') return { t: 'if', path: node.getAttribute('value').match(WHOLE)[1], kids: kids };
+    if (tag === 'sc-for') return { t: 'for', path: node.getAttribute('list').match(WHOLE)[1], as: node.getAttribute('as'), kids: kids };
+    var attrs = [];
+    for (var i = 0; i < node.attributes.length; i++) {
+      var a = node.attributes[i];
+      attrs.push([ATTR[a.name] || a.name, a.value, a.value.indexOf('{{') >= 0]);
+    }
+    return { t: 'el', tag: tag, attrs: attrs, kids: kids };
+  }
+  function wrap(fn) {
+    return function (ev) { if (ev && !ev.nativeEvent) { try { ev.nativeEvent = ev; } catch (e) {} } return fn(ev); };
+  }
+  function renderKids(kids, scope) {
+    var out = [];
+    for (var i = 0; i < kids.length; i++) out.push(render(kids[i], scope, i));
+    return out;
+  }
+  function render(n, scope, key) {
+    if (n.t === 'text') {
+      if (!n.hole) return n.s;
+      var tv = interp(n.s, scope);
+      return tv == null || tv === false || tv === true ? '' : String(tv);
+    }
+    if (n.t === 'if') return get(scope, n.path) ? h(Fragment, { key: key }, renderKids(n.kids, scope)) : null;
+    if (n.t === 'for') {
+      var list = get(scope, n.path) || [];
+      return h(Fragment, { key: key }, list.map(function (item, i) {
+        var sc = Object.create(scope);
+        sc[n.as] = item; sc.$index = i;
+        return h(Fragment, { key: i }, renderKids(n.kids, sc));
+      }));
+    }
+    var props = { key: key };
+    for (var i = 0; i < n.attrs.length; i++) {
+      var a = n.attrs[i], v = a[2] ? interp(a[1], scope) : a[1];
+      if (typeof v === 'function' && a[0] !== 'ref') v = wrap(v);
+      props[a[0]] = v;
+    }
+    return h(n.tag, props, renderKids(n.kids, scope));
+  }
+
+  var tree = [];
+  var tplRoot = document.getElementById('tpl').content;
+  for (var c = tplRoot.firstChild; c; c = c.nextSibling) { var k = compile(c); if (k) tree.push(k); }
+  var mount = document.getElementById('app');
+  var pending = false;
+
+  function DCLogic() { this.props = {}; this.state = undefined; }
+  DCLogic.prototype.setState = function (o) {
+    this.state = Object.assign({}, this.state || {}, o);
+    this.forceUpdate();
+  };
+  DCLogic.prototype.forceUpdate = function () {
+    var self = this;
+    if (pending) return;
+    pending = true;
+    Promise.resolve().then(function () { pending = false; self.__paint(true); });
+  };
+  DCLogic.prototype.__paint = function (isUpdate) {
+    preact.render(h(Fragment, null, renderKids(tree, this.renderVals())), mount);
+    if (isUpdate && this.componentDidUpdate) this.componentDidUpdate();
+  };
+  window.DCLogic = DCLogic;
+  window.__start = function (Component) {
+    var app = new Component();
+    app.props = app.props || {};
+    app.__paint(false);
+    if (app.componentDidMount) app.componentDidMount();
+    window.__app = app;
+  };
+})();
+</script>
+<script>
+
+class Component extends DCLogic {
+  st() {
+    var map = { 'ホーム': 'home', '何食べたい（ひとり）': 'soloWant', '提案（ひとり）': 'soloResult', '何食べたい（家族）': 'famWant', '提案（家族）': 'famResult', '履歴': 'history', 'わたし': 'me' };
+    var start = map[(this.props && this.props.startScreen) || 'ホーム'] || 'home';
+    var d = {
+      tab: 'home', step: 'who', who: null,
+      mo: true, fa: true, br: true,
+      query: '', myWish: '', variant: 'ramen',
+      famPhase: 0, famN: 0, famChoice: null,
+      thinkN: 0,
+      a1: true, a2: true, a3: true,
+      whyOpen: false, chosen: false, fb: null,
+      lastFb: null, log: [],
+      loc: 0, shop: 's1', shopGo: null,
+      place: null, recipeOpen: false
+    };
+    if (start === 'soloWant') { d.who = 'solo'; d.step = 'want'; }
+    if (start === 'soloResult') { d.who = 'solo'; d.step = 'result'; d.myWish = 'ラーメン食べたい'; }
+    if (start === 'famWant') { d.who = 'fam'; d.step = 'want'; }
+    if (start === 'famResult') { d.who = 'fam'; d.step = 'result'; d.myWish = '肉が食べたい'; d.famPhase = 2; d.famN = 99; d.famChoice = 'karaage'; }
+    if (start === 'history') d.tab = 'history';
+    if (start === 'me') d.tab = 'me';
+    if (start !== 'home' && start !== 'history' && start !== 'me') d.place = 'home';
+    var s = this.state || {};
+    Object.keys(s).forEach(function (k) { if (s[k] !== undefined) d[k] = s[k]; });
+    return d;
+  }
+
+  componentWillUnmount() { clearTimeout(this._t); clearTimeout(this._t2); clearTimeout(this._t3); }
+
+  componentDidUpdate() {
+    var self = this;
+    var s = this.st();
+    var p = this._prev || {};
+    var cur = { step: s.step, tab: s.tab, famPhase: s.famPhase, famN: s.famN, whyOpen: s.whyOpen, chosen: s.chosen, fb: s.fb, loc: s.loc, recipeOpen: s.recipeOpen };
+    this._prev = cur;
+    if (s.tab !== 'home') return;
+    var scrollWant = s.step === 'want' && s.famPhase > 0 && (p.famPhase !== s.famPhase || p.famN !== s.famN);
+    var scrollRes = s.step === 'result' && p.step === 'result' && (
+      (p.chosen !== s.chosen && s.chosen) ||
+      (p.fb !== s.fb && s.fb) ||
+      (p.whyOpen !== s.whyOpen && s.whyOpen && !s.chosen && s.loc === 0 && !s.recipeOpen) ||
+      (p.recipeOpen !== s.recipeOpen && s.recipeOpen && !s.chosen)
+    );
+    if (!scrollWant && !scrollRes) return;
+    setTimeout(function () {
+      var el = scrollWant ? self._want : self._res;
+      if (el && el.scrollTo) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+    }, 90);
+  }
+
+  isGroup(s) { return s.who === 'fam' && (s.mo || s.fa || s.br); }
+
+  seq(s) {
+    var q = ['sent'];
+    if (s.mo) q.push('mo1');
+    if (s.fa) q.push('fa1');
+    if (s.br) { q.push('br1'); q.push('ai'); q.push('br2'); }
+    if (s.fa && (s.mo || s.br)) q.push('fa2');
+    q.push('ready');
+    return q;
+  }
+
+  famRun(delay) {
+    var self = this;
+    clearTimeout(this._t3);
+    var tick = function () {
+      var s = self.st();
+      var q = self.seq(s);
+      var n = s.famN;
+      if (n >= q.length) return;
+      if (q[n] === 'br2' && !s.famChoice) return;
+      self.setState({ famN: n + 1 });
+      self._t3 = setTimeout(tick, 950);
+    };
+    this._t3 = setTimeout(tick, delay || 600);
+  }
+
+  startThink() {
+    var self = this;
+    clearTimeout(this._t);
+    clearTimeout(this._t2);
+    clearTimeout(this._t3);
+    this.setState({ step: 'think', thinkN: 0, whyOpen: false, chosen: false, fb: null, a1: true, a2: true, a3: true, loc: 0, shop: 's1', shopGo: null, recipeOpen: false });
+    var tick = function () {
+      var n = self.st().thinkN;
+      if (n >= 5) {
+        self._t = setTimeout(function () {
+          var goOut = self.st().place === 'out';
+          self.setState({ step: 'result', loc: goOut ? 1 : 0 });
+          if (goOut) self._t2 = setTimeout(function () { self.setState({ loc: 2 }); }, 1400);
+        }, 700);
+        return;
+      }
+      self.setState({ thinkN: n + 1 });
+      self._t = setTimeout(tick, 480);
+    };
+    this._t = setTimeout(tick, 500);
+  }
+
+  variantOf(t) {
+    if (/ラーメン|らーめん/.test(t)) return 'ramen';
+    if (/がっつり|ガッツリ/.test(t)) return 'gat';
+    if (/コンビニ/.test(t)) return 'conbini';
+    if (/外食|お店|韓国/.test(t)) return 'eatout';
+    if (/料理したくない|作りたくない|めんどう|面倒/.test(t)) return 'nocook';
+    if (/なんでも|何でも|おまかせ|お任せ/.test(t)) return 'any';
+    return 'free';
+  }
+
+  answer(text) {
+    var s = this.st();
+    var group = this.isGroup(s);
+    var t = String(text || '').trim();
+    if (!t) t = group ? '肉が食べたい' : 'ラーメン食べたい';
+    if (group) {
+      this.setState({ myWish: t, famPhase: 1, famN: 0, famChoice: null, query: '' });
+      return;
+    }
+    this.setState({ myWish: t, variant: this.variantOf(t), query: '' });
+    this.startThink();
+  }
+
+  restart() {
+    clearTimeout(this._t);
+    clearTimeout(this._t3);
+    this.setState({
+      tab: 'home', step: 'who', who: null,
+      mo: true, fa: true, br: true,
+      query: '', myWish: '',
+      famPhase: 0, famN: 0, famChoice: null,
+      thinkN: 0, a1: true, a2: true, a3: true,
+      whyOpen: false, chosen: false, fb: null,
+      loc: 0, shop: 's1', shopGo: null,
+      place: null, recipeOpen: false
+    });
+    clearTimeout(this._t2);
+  }
+
+  renderVals() {
+    var self = this;
+    var s = this.st();
+    var flow = s.tab === 'home';
+    var group = this.isGroup(s);
+    var out = s.place === 'out';
+    var awayShort = out ? '別で食べる' : '外で食べる';
+    var awayLabel = out ? '今日は一緒に食べない' : '今日は外で食べる';
+    var awayWhy = out ? '「今日は別で食べる」' : '「今日は外食」';
+    var q = this.seq(s);
+    var vis = function (id) { var i = q.indexOf(id); return s.famPhase === 2 && i >= 0 && i < s.famN; };
+
+    var short = function (t) {
+      if (/肉/.test(t)) return '肉';
+      if (/がっつり|ガッツリ/.test(t)) return 'がっつり';
+      if (/さっぱり/.test(t)) return 'さっぱり';
+      if (/野菜/.test(t)) return '野菜多め';
+      if (/なんでも|何でも/.test(t)) return 'なんでも';
+      if (/ラーメン/.test(t)) return 'ラーメン';
+      if (/コンビニ/.test(t)) return 'コンビニ';
+      if (/韓国/.test(t)) return '韓国料理';
+      if (/外食/.test(t)) return '外食';
+      if (/料理したくない/.test(t)) return '作らない';
+      t = t.replace(/(が|を)?(食べたい|たべたい|がいい|にしたい)(です|な|なあ)?[！!。]*$/, '') || t;
+      return t.length > 6 ? t.slice(0, 6) + '…' : t;
+    };
+
+    var choices = {
+      curry: { label: 'カレー', dish: 'チキンと野菜のカレー', main: 'チキンカレー' },
+      karaage: { label: '唐揚げ', dish: '鶏の照り焼き定食', main: '鶏の照り焼き' },
+      shoga: { label: '生姜焼き', dish: '豚の生姜焼き定食', main: '豚の生姜焼き' },
+      pasta: { label: 'パスタ', dish: 'チキンのトマトパスタ', main: 'チキンのトマトパスタ' }
+    };
+    var ch = choices[s.famChoice] || choices.karaage;
+
+    var faOut = s.fa && vis('fa2');
+    var n = 1 + (s.mo ? 1 : 0) + (s.br ? 1 : 0) + (s.fa && !faOut ? 1 : 0);
+    var countText = s.who === 'solo' ? 'ひとりで食べます' : ('今夜は' + n + '人で食べます');
+
+    var M = {
+      me: { ch: '自分', name: 'あなた', color: '#F26B5B', fs: '12px', note: '最近、野菜と鉄分が少なめ' },
+      mo: { ch: '母', name: '母', color: '#6DB58A', fs: '16px', note: '最近、野菜が少なめ' },
+      fa: { ch: '父', name: '父', color: '#F28A3C', fs: '16px', note: 'さっぱりした味が好き' },
+      br: { ch: '弟', name: '弟', color: '#F4C542', fs: '16px', note: '最近、たんぱく質が少なめ' }
+    };
+
+    var whoCard = function (id) {
+      var on = s.who === id;
+      return {
+        on: on,
+        border: on ? '#2E2219' : '#F1E6D6',
+        bg: on ? '#FFEBD6' : '#FFFFFF',
+        pick: function () { self.setState({ who: id }); }
+      };
+    };
+    var whoRow = function (id) {
+      var m = M[id];
+      var on = id === 'me' ? true : !!s[id];
+      return {
+        ch: m.ch, name: m.name, color: m.color, fs: m.fs, note: m.note,
+        on: on, off: !on, awayLabel: awayLabel,
+        op: on ? 1 : 0.4,
+        border: on ? '#CFE6D4' : '#F1E6D6',
+        bg: on ? '#F4FAF5' : '#FFFFFF',
+        toggle: function () {
+          if (id === 'me') return;
+          var o = {}; o[id] = !on; self.setState(o);
+        }
+      };
+    };
+    var whoRows = s.who === 'fam' ? [whoRow('me'), whoRow('mo'), whoRow('fa'), whoRow('br')] : [whoRow('me')];
+
+    var chip = function (text, kind) {
+      if (kind === 'out') return { ans: text, ansBg: '#FFE3DE', ansColor: '#8F2A1E', ansBorder: '#FFE3DE' };
+      if (kind === 'wait') return { ans: '…', ansBg: '#F3E8D8', ansColor: '#5A4D42', ansBorder: '#F3E8D8' };
+      return { ans: text, ansBg: '#FFFFFF', ansColor: '#2E2219', ansBorder: '#EADCC8' };
+    };
+    var stripOne = function (id, c, out) {
+      var m = M[id];
+      return { ch: m.ch, color: m.color, fs: m.fs === '16px' ? '15px' : '11px', op: out ? 0.4 : 1, ans: c.ans, ansBg: c.ansBg, ansColor: c.ansColor, ansBorder: c.ansBorder };
+    };
+    var strip = [stripOne('me', s.myWish ? chip(short(s.myWish)) : chip('', 'wait'), false)];
+    if (s.who === 'fam') {
+      strip.push(stripOne('mo', !s.mo ? chip(awayShort, 'out') : (vis('mo1') ? chip('野菜多め') : chip('', 'wait')), !s.mo));
+      strip.push(stripOne('fa', (!s.fa || faOut) ? chip(awayShort, 'out') : (vis('fa1') ? chip('さっぱり') : chip('', 'wait')), !s.fa || faOut));
+      strip.push(stripOne('br', !s.br ? chip(awayShort, 'out') : (vis('br2') ? chip(ch.label) : (vis('br1') ? chip('わかんない') : chip('', 'wait'))), !s.br));
+    }
+
+    var order = ['who', 'want', 'think', 'result'];
+    var ci = order.indexOf(s.step);
+    var stp = function (i) {
+      var done = i < ci, cur = i === ci;
+      return {
+        bg: done ? '#6DB58A' : (cur ? '#F28A3C' : '#F3E8D8'),
+        w: cur ? 700 : 500,
+        tc: cur ? '#2E2219' : '#5A4D42',
+        done: done, num: !done
+      };
+    };
+
+    var tab = function (id) {
+      var on = s.tab === id;
+      return {
+        color: on ? '#2E2219' : '#5A4D42',
+        pill: on ? '#FFD9B5' : 'transparent',
+        weight: on ? 700 : 500,
+        cur: on ? 'page' : undefined,
+        go: function () {
+          if (id === 'home' && s.tab === 'home') return self.restart();
+          self.setState({ tab: id });
+        }
+      };
+    };
+
+    var FB = {
+      yum: { label: 'おいしかった', reply: 'この味、ちゃんと覚えておくね。' },
+      again: { label: 'また食べたい', reply: 'また食べたい日に、すぐ出せるようにしておくね。' },
+      much: { label: '量が多かった', reply: '次は少なめで提案するね。' },
+      spicy: { label: 'ちょっと辛かった', reply: '次は辛さひかえめで提案するね。' }
+    };
+    var homeLine = '最近ラーメン多めだね。今日はまだ野菜少なめ。でも、食べたいものから考えてOK。';
+    if (s.lastFb) {
+      var lf = s.lastFb;
+      if (lf.id === 'yum') homeLine = 'この前の' + lf.dish + '、おいしかったって言ってたね。今日もいいの見つけよう。';
+      if (lf.id === 'again') homeLine = '「また食べたい」って言ってた' + lf.dish + '、覚えてるよ。今日はどうする？';
+      if (lf.id === 'much') homeLine = 'この前「量が多かった」って言っていたから、今日は少なめに考えるね。';
+      if (lf.id === 'spicy') homeLine = 'この前「ちょっと辛かった」って言っていたから、今日は辛さひかえめで考えるね。';
+    }
+
+    var mkChips = function (list) {
+      return list.map(function (t) { return { label: t, pick: function () { self.answer(t); } }; });
+    };
+    var wantChips = group
+      ? mkChips(['肉が食べたい', 'がっつり食べたい', 'さっぱりしたもの', '野菜多めがいい', 'なんでもいい'])
+      : mkChips(out
+        ? ['ラーメン食べたい', 'がっつり食べたい', '韓国料理がいい', 'コンビニがいい', 'なんでもいい']
+        : ['ラーメン食べたい', 'がっつり食べたい', '料理したくない', 'なんでもいい']);
+
+    var sentNames = [];
+    if (s.mo) sentNames.push('母');
+    if (s.fa) sentNames.push('父');
+    if (s.br) sentNames.push('弟');
+    var choosing = vis('ai') && !vis('br2');
+    var ready = vis('ready');
+    var pickFn = function (id) {
+      return function () { self.setState({ famChoice: id }); self.famRun(350); };
+    };
+
+    var freeDish = String(s.myWish || '').replace(/(が|を)?(食べたい|たべたい|がいい|にしたい)(です|な|なあ)?[！!。]*$/, '').trim() || 'おまかせごはん';
+    var V = {
+      ramen: {
+        affirm: 'ラーメンいいね！', line: '最近、野菜と鉄分が少なめだから、今日はちょっと足してバランスを取ろう。',
+        dish: '味噌ラーメン', adds: [['味玉', 'たんぱく質・鉄分'], ['ほうれん草', '野菜・鉄分'], ['わかめ', 'ミネラル']],
+        msg: '好きなものはそのまま。足りないものだけプラス。',
+        memo: 'この前「量が多かった」って言っていたから、麺は少なめにしておくね。',
+        w3: ['よく選ぶ', 'ラーメンをよく選んでいる'], w4: ['味の好み', '濃い味が好き'],
+        concl: 'だから、ラーメンはそのまま。濃いめの味噌にして、足りない分だけトッピングで。',
+        pref: '濃い味が好き・ラーメンが好き'
+      },
+      gat: {
+        affirm: 'がっつりいこう！', line: '辛いもの好きだよね。お肉はそのまま、最近少なめの野菜と鉄分をちょっと足そう。',
+        dish: '豚キムチ丼', adds: [['温泉卵', 'たんぱく質'], ['ナムル', '野菜・鉄分'], ['わかめスープ', 'ミネラル']],
+        msg: 'がっつりはそのまま。足りないものだけプラス。',
+        memo: 'この前「量が多かった」って言っていたから、ごはんは少なめにしておくね。',
+        w3: ['よく選ぶ', '丼ものをよく選んでいる'], w4: ['味の好み', '辛いものが好き'],
+        concl: 'だから、がっつりはそのまま。辛めの丼にして、足りない分だけ小鉢とスープで。',
+        pref: '辛いものが好き・濃い味が好き'
+      },
+      conbini: {
+        affirm: 'コンビニいいね！', line: 'いつもの組み合わせはそのまま。最近少なめの野菜と鉄分を、ひとつ足しておこう。',
+        dish: 'おにぎり＋サラダチキン', adds: [['ゆで卵', 'たんぱく質'], ['おひたし', '野菜・鉄分'], ['わかめスープ', 'ミネラル']],
+        msg: '手軽さはそのまま。足りないものだけプラス。',
+        memo: '前回これ好きだったよね。サラダチキンは、いつもの味にしておくね。',
+        w3: ['よく選ぶ', 'コンビニをよく使っている'], w4: ['好きなもの', '鶏肉・卵料理が好き'],
+        concl: 'だから、コンビニはそのまま。好きな鶏肉を軸に、足りない分だけ一品で。',
+        pref: '鶏肉が好き・卵料理が好き'
+      },
+      eatout: {
+        affirm: (/韓国/.test(s.myWish || '') ? '韓国料理いいね！' : '外食いいね！'), line: '韓国料理、好きだよね。辛さはそのまま、最近少なめの野菜と鉄分を足そう。',
+        dish: 'スンドゥブ定食', adds: [['卵', 'たんぱく質'], ['ナムル', '野菜・鉄分'], ['わかめスープ', 'ミネラル']],
+        msg: '食べたい気分はそのまま。足りないものだけプラス。',
+        memo: 'この前「量が多かった」って言っていたから、ごはんは少なめで頼むのがおすすめ。',
+        w3: ['好きなもの', '韓国料理が好き'], w4: ['味の好み', '辛いものが好き'],
+        concl: 'だから、外食はそのまま。好きな韓国料理で、足りない分だけ小皿で。',
+        pref: '韓国料理が好き・辛いものが好き'
+      },
+      nocook: {
+        affirm: '作らない日、あっていい！', line: '買って帰るだけでOKなものにしよう。最近少なめの野菜と鉄分も、のせるだけで。',
+        dish: 'からあげ弁当', adds: [['ゆで卵', 'たんぱく質'], ['カットサラダ', '野菜'], ['わかめの味噌汁', 'ミネラル']],
+        msg: '作らなくてOK。足りないものだけプラス。',
+        memo: 'この前「量が多かった」って言っていたから、ごはん少なめのお弁当にしておくね。',
+        w3: ['今日の気分', '料理はしたくない'], w4: ['好きなもの', '鶏肉が好き'],
+        concl: 'だから、作らないのはそのまま。好きな鶏肉のお弁当に、足りない分だけ足して。',
+        pref: '鶏肉が好き・濃い味が好き'
+      },
+      any: {
+        affirm: 'じゃあ、任せて！', line: '前回これ好きだったよね。最近少なめの野菜と鉄分もとれる一皿にしたよ。',
+        dish: '鶏肉と野菜の甘辛炒め', adds: [['温泉卵', 'たんぱく質'], ['ほうれん草', '野菜・鉄分'], ['わかめスープ', 'ミネラル']],
+        msg: '好きな味はそのまま。足りないものだけプラス。',
+        memo: '辛いもの好きだから、甘辛は少しピリ辛にしておくね。',
+        w3: ['前回', 'この料理に「おいしかった」と答えた'], w4: ['好きなもの', '鶏肉が好き'],
+        concl: 'だから、迷った日はあなたの「好き」から。野菜と鉄分も一緒にとれる一皿に。',
+        pref: '鶏肉が好き・辛いものが好き'
+      },
+      free: {
+        affirm: freeDish + '、いいね！', line: '最近、野菜と鉄分が少なめだから、今日はちょっと足してバランスを取ろう。',
+        dish: freeDish, adds: [['温泉卵', 'たんぱく質'], ['ほうれん草', '野菜・鉄分'], ['わかめスープ', 'ミネラル']],
+        msg: '好きなものはそのまま。足りないものだけプラス。',
+        memo: 'この前「量が多かった」って言っていたから、少なめにしておくね。',
+        w3: ['食べたい', '今日は「' + freeDish + '」の気分'], w4: ['味の好み', '濃い味が好き'],
+        concl: 'だから、食べたいものはそのまま。足りない分だけ、ひとつ足して。',
+        pref: '濃い味が好き・辛いものが好き'
+      }
+    };
+    var v = V[s.variant] || V.ramen;
+    var addKeys = ['a1', 'a2', 'a3'];
+    var adds = v.adds.map(function (a, i) {
+      var key = addKeys[i];
+      var on = !!s[key];
+      return {
+        label: a[0], tag: a[1], on: on, off: !on,
+        bg: on ? '#E1F2E5' : '#FFFFFF',
+        border: on ? '#2B6E45' : '#B9A994',
+        color: on ? '#1F5233' : '#5A4D42',
+        toggle: function () { var o = {}; o[key] = !on; self.setState(o); }
+      };
+    });
+    var layer = function (key) { return { op: s[key] ? 1 : 0, sc: s[key] ? 1 : 0.6 }; };
+    var soloWhy = [
+      { tag: '最近の食事', text: '最近3日間、野菜が少なめ', bg: '#E1F2E5', fg: '#1F5233' },
+      { tag: '栄養', text: '鉄分が不足しやすい', bg: '#E1F2E5', fg: '#1F5233' },
+      { tag: v.w3[0], text: v.w3[1], bg: '#FFEBD6', fg: '#8A3209' },
+      { tag: v.w4[0], text: v.w4[1], bg: '#FFE3DE', fg: '#8F2A1E' },
+      { tag: '目標', text: '「無理なく栄養バランスを改善したい」という目標', bg: '#FFF0C4', fg: '#5A4D42' }
+    ];
+    var onAdds = adds.filter(function (a) { return a.on; }).map(function (a) { return a.label; });
+    var soloFull = v.dish + (onAdds.length ? '＋' + onAdds.join('・') : '');
+    var DISH_PFC = { ramen: [22, 18, 75], gat: [26, 20, 85], conbini: [24, 8, 48], eatout: [24, 16, 70], nocook: [24, 22, 80], any: [28, 14, 60], free: [22, 16, 70] };
+    var ADD_PFC = { a1: [6, 5, 1], a2: [1, 0, 1], a3: [0, 0, 1] };
+    var soloPfc = (DISH_PFC[s.variant] || DISH_PFC.ramen).slice();
+    addKeys.forEach(function (k) {
+      if (s[k]) soloPfc = soloPfc.map(function (x, i) { return x + ADD_PFC[k][i]; });
+    });
+
+    var gWhy = [];
+    var whyRow = function (id, wish, note, out) {
+      var m = M[id];
+      return { ch: m.ch, color: m.color, fs: m.fs === '16px' ? '14px' : '11px', wish: wish, note: note || '', hasNote: !!note, op: out ? 0.55 : 1 };
+    };
+    gWhy.push(whyRow('me', '自分「' + (s.myWish || '肉が食べたい') + '」', '', false));
+    gWhy.push(s.mo ? whyRow('mo', '母「野菜多めがいい」', '最近、野菜が少なめ', false) : whyRow('mo', '母' + awayWhy, '', true));
+    gWhy.push(s.br ? whyRow('br', '弟「' + ch.label + '」を選択', '最近、たんぱく質が少なめ', false) : whyRow('br', '弟' + awayWhy, '', true));
+    gWhy.push((s.fa && !faOut) ? whyRow('fa', '父「さっぱりしたもの」', 'さっぱりした味が好き', false) : whyRow('fa', '父' + awayWhy, '', true));
+    var groupFull = ch.dish + '＋和風サラダ';
+
+    var eaters = ['me'];
+    if (s.who === 'fam') {
+      if (s.mo) eaters.push('mo');
+      if (s.fa && !faOut) eaters.push('fa');
+      if (s.br) eaters.push('br');
+    }
+    var wishes = [short(s.myWish || '')];
+    if (group) {
+      if (s.mo) wishes.push('野菜多め');
+      if (s.fa && !faOut) wishes.push('さっぱり');
+      if (s.br) wishes.push(ch.label);
+    }
+    var thinkRaw = group ? [
+      ['食べたいもの', wishes.join('・')],
+      ['味の好み・苦手な食材', '一人ひとりの好き・苦手'],
+      ['最近食べたもの', s.mo ? '母は最近、野菜が少なめ' : 'みんなの最近の食事'],
+      ['不足しやすい栄養', s.br ? '弟は最近、たんぱく質が少なめ' : 'あなたは野菜と鉄分が少なめ'],
+      ['健康目標', 'みんなが無理なく続けられること']
+    ] : [
+      ['食べたいもの', s.myWish || 'ラーメン食べたい'],
+      ['味の好み・好きな料理', v.pref],
+      ['最近食べたもの', 'この3日間、野菜が少なめ'],
+      ['不足しやすい栄養', '野菜と鉄分'],
+      ['健康目標', '無理なく栄養バランスを改善したい']
+    ];
+    var thinkItems = thinkRaw.map(function (r, i) {
+      var done = i < s.thinkN;
+      return { label: r[0], text: r[1], op: done ? 1 : 0.3, bg: done ? '#2B6E45' : '#D8C9B6' };
+    });
+
+    var todayDish = group ? groupFull : soloFull;
+    var todayWho = group ? ('家族' + n + '人') : 'ひとり';
+    var fbOpts = ['yum', 'again', 'much', 'spicy'].map(function (id) {
+      var on = s.fb === id;
+      return {
+        label: FB[id].label, on: on,
+        border: on ? '#2B6E45' : '#EADCC8',
+        bg: on ? '#E1F2E5' : '#FFFFFF',
+        pick: function () {
+          var log = (s.log || []).slice();
+          if (log.length) {
+            var last = log[log.length - 1];
+            log[log.length - 1] = { dish: last.dish, who: last.who, fb: FB[id].label, pfc: last.pfc };
+          }
+          self.setState({ fb: id, lastFb: { id: id, dish: (group ? ch.dish : v.dish), label: FB[id].label }, log: log });
+        }
+      };
+    });
+
+    var slot = function (dish, fam, fb) {
+      var has = !!dish;
+      return {
+        dish: has ? dish : 'なし', w: has ? 700 : 500, fg: has ? '#2E2219' : '#6B5D51',
+        fam: fam || '', hasFam: !!fam, fb: fb || '', hasFb: !!fb,
+        shown: true, todo: false, go: function () {}
+      };
+    };
+    var histLog = s.log || [];
+    var histLast = histLog[histLog.length - 1];
+    var todayPm;
+    if (histLast) {
+      todayPm = slot(histLast.dish, histLast.who !== 'ひとり' ? histLast.who : '', histLast.fb);
+    } else {
+      todayPm = slot('', '', '');
+      todayPm.shown = false;
+      todayPm.todo = true;
+      todayPm.go = function () { self.restart(); };
+    }
+    var histDays = [
+      { when: '今日', border: histLast ? '#F28A3C' : '#F1E6D6', am: slot('トースト＋ヨーグルト'), noon: slot('鮭おにぎり＋サラダチキン'), pm: todayPm, snack: slot('カフェラテ') },
+      { when: '昨日', border: '#F1E6D6', am: slot(''), noon: slot('とんこつラーメン'), pm: slot('豚キムチ丼＋温泉卵', '', 'おいしかった'), snack: slot('チョコレート') },
+      { when: 'おととい', border: '#F1E6D6', am: slot('おにぎり'), noon: slot('からあげ弁当'), pm: slot('醤油ラーメン', '', '量が多かった'), snack: slot('') },
+      { when: '3日前', border: '#F1E6D6', am: slot('トースト'), noon: slot('カルボナーラ'), pm: slot('鮭の塩焼き定食', '家族4人', 'また食べたい'), snack: slot('プリン') }
+    ];
+
+    var learned = [];
+    if (s.lastFb) {
+      learned.push({ when: '今日', whenFg: '#B4430F', text: s.lastFb.dish + '「' + s.lastFb.label + '」', effect: '→ ' + FB[s.lastFb.id].reply });
+    }
+    learned.push({ when: '昨日', whenFg: '#5A4D42', text: '豚キムチ丼「おいしかった」', effect: '→ 辛い料理の好みを少し上げたよ' });
+    learned.push({ when: 'おととい', whenFg: '#5A4D42', text: '醤油ラーメン「量が多かった」', effect: '→ ラーメンは少なめで提案するね' });
+
+    var RECIPES = {
+      ramen: {
+        time: '約10分',
+        ings: [['中華麺', '3/4玉（少なめ）'], ['味噌ラーメンスープ', '1食分'], ['もやし', 'ひとつかみ'], ['長ねぎ', '少々']],
+        addIngs: [['味玉', '1個'], ['ほうれん草（冷凍でOK）', '50g'], ['乾燥わかめ', 'ひとつまみ']],
+        steps: ['鍋に湯を沸かし、もやしと野菜のトッピングをさっとゆでて取り出す。', '同じ湯で、麺を袋の表示どおりにゆでる。', '丼にスープを作り、湯を切った麺を入れる。', 'トッピングをのせて完成。'],
+        tip: 'この前「量が多かった」って言っていたから、麺は少なめの分量にしているよ。'
+      },
+      gat: {
+        time: '約10分',
+        ings: [['豚こま肉', '120g'], ['キムチ', '60g'], ['ごはん', '茶碗1杯（少なめ）'], ['ごま油', '小さじ1'], ['しょうゆ', '小さじ1']],
+        addIngs: [['温泉卵', '1個'], ['ほうれん草ナムル（市販でOK）', '1パック'], ['わかめスープ（インスタント）', '1食分']],
+        steps: ['フライパンにごま油を熱し、豚肉を中火で炒める。', '色が変わったらキムチを加え、しょうゆで味をととのえる。', 'ごはんにのせる。', 'トッピングと小鉢、スープを添えて完成。'],
+        tip: 'この前「量が多かった」って言っていたから、ごはんは少なめの分量にしているよ。'
+      },
+      any: {
+        time: '約15分',
+        ings: [['鶏もも肉', '150g'], ['ピーマン', '2個'], ['玉ねぎ', '1/4個'], ['にんじん', '1/4本'], ['しょうゆ・みりん', '各大さじ1'], ['コチュジャン', '小さじ1']],
+        addIngs: [['温泉卵', '1個'], ['ほうれん草（冷凍でOK）', '50g'], ['わかめスープ（インスタント）', '1食分']],
+        steps: ['鶏肉と野菜を、ひと口大に切る。', 'フライパンで鶏肉を皮目から焼き、焼き色がついたら野菜を加えて炒める。', 'しょうゆ・みりん・コチュジャンを加えて、全体にからめる。', '器に盛り、トッピングとスープを添えて完成。'],
+        tip: '辛いもの好きに合わせて、コチュジャンでピリ辛にしているよ。'
+      }
+    };
+    var num = function (x) { return String(Math.round(x * n * 10) / 10); };
+    var SALAD = [['レタス', num(2) + '枚'], ['大根', num(40) + 'g'], ['乾燥わかめ', 'ひとつまみ'], ['和風ドレッシング', '適量']];
+    var GROUP_RECIPES = {
+      karaage: {
+        time: '約20分',
+        ings: [['鶏もも肉', num(150) + 'g'], ['しょうゆ・みりん・酒', '各大さじ' + num(1)], ['砂糖', '小さじ' + num(1)]],
+        steps: ['鶏肉は皮目から中火で5分焼き、返してふたをして4分焼く。', 'しょうゆ・みりん・酒・砂糖を加え、照りが出るまで煮からめる。', 'レタス・大根・わかめを、和風ドレッシングであえる。', 'ごはん・味噌汁と一緒に盛りつけて完成。']
+      },
+      curry: {
+        time: '約30分',
+        ings: [['鶏もも肉', num(100) + 'g'], ['玉ねぎ', num(80) + 'g'], ['にんじん', num(40) + 'g'], ['ブロッコリー', num(40) + 'g'], ['カレールウ', num(1) + '皿分'], ['ごはん', num(1) + '膳']],
+        steps: ['鶏肉と野菜を、ひと口大に切る。', '鍋で鶏肉と玉ねぎ・にんじんを炒め、水を加えて15分煮る。', 'ルウを溶かし、ブロッコリーを加えて5分煮る。', 'レタス・大根・わかめを和風ドレッシングであえ、カレーに添えて完成。']
+      },
+      shoga: {
+        time: '約15分',
+        ings: [['豚ロース薄切り', num(120) + 'g'], ['玉ねぎ', num(50) + 'g'], ['おろし生姜', '小さじ' + num(1)], ['しょうゆ・みりん', '各大さじ' + num(1)], ['キャベツの千切り', num(50) + 'g']],
+        steps: ['玉ねぎを薄切りにし、フライパンで炒める。', '豚肉を加えて焼き、色が変わったら生姜・しょうゆ・みりんをからめる。', 'レタス・大根・わかめを、和風ドレッシングであえる。', 'キャベツ・ごはん・味噌汁と一緒に盛りつけて完成。']
+      },
+      pasta: {
+        time: '約20分',
+        ings: [['スパゲッティ', num(100) + 'g'], ['鶏もも肉', num(80) + 'g'], ['トマト缶', num(100) + 'g'], ['玉ねぎ', num(40) + 'g'], ['ほうれん草', num(40) + 'g'], ['にんにく・オリーブオイル', '各適量']],
+        steps: ['スパゲッティを、袋の表示どおりにゆでる。', 'フライパンでにんにく・玉ねぎ・鶏肉を炒め、トマト缶を加えて5分煮る。', 'ほうれん草とゆでた麺を加えて、ソースをからめる。', 'レタス・大根・わかめを和風ドレッシングであえ、パスタに添えて完成。']
+      }
+    };
+    var rcData = null;
+    var rcIngs = [];
+    if (!out && group) {
+      rcData = GROUP_RECIPES[s.famChoice] || GROUP_RECIPES.karaage;
+      rcIngs = rcData.ings.concat(SALAD);
+    } else if (!out && RECIPES[s.variant]) {
+      rcData = RECIPES[s.variant];
+      rcIngs = rcData.ings.slice();
+      addKeys.forEach(function (k, i) { if (s[k]) rcIngs.push(rcData.addIngs[i]); });
+    }
+    var rc = {
+      show: !!rcData,
+      open: !!rcData && !!s.recipeOpen,
+      label: s.recipeOpen ? 'レシピをとじる' : 'レシピを見る',
+      time: rcData ? rcData.time : '',
+      meta: rcData ? (rcData.time + '・' + (group ? n : 1) + '人分') : '',
+      ings: rcIngs.map(function (x) { return { name: x[0], qty: x[1] }; }),
+      steps: rcData ? rcData.steps.map(function (t, i) { return { num: i + 1, text: t }; }) : [],
+      tip: rcData ? (group ? 'あなたは生のトマトが苦手だから、サラダはトマトなしにしているよ。' : rcData.tip) : '',
+      toggle: function () { self.setState({ recipeOpen: !s.recipeOpen }); }
+    };
+
+    var todayPfc = group ? [32, 18, 80] : soloPfc;
+
+    var PROF = { sex: '女性', age: 24, h: 160, w: 52, act: 1.55 };
+    var bmr = 10 * PROF.w + 6.25 * PROF.h - 5 * PROF.age + (PROF.sex === '男性' ? 5 : -161);
+    var kcal = Math.round(bmr * PROF.act / 10) * 10;
+    var need = [Math.round(kcal * 0.15 / 4), Math.round(kcal * 0.25 / 9), Math.round(kcal * 0.6 / 4)];
+    var got = [28, 24, 150];
+    var logAll = s.log || [];
+    var lastLog = logAll[logAll.length - 1];
+    var ate = !!(lastLog && lastLog.pfc);
+    if (ate) got = got.map(function (x, i) { return x + lastLog.pfc[i]; });
+    var pfcNames = ['たんぱく質', '脂質', '炭水化物'];
+    var pfcTags = ['P', 'F', 'C'];
+    var pfcColors = ['#E0652B', '#E2A21B', '#4E9E5C'];
+    var lowI = 0;
+    var pfcRows = need.map(function (nd, i) {
+      var left = Math.max(0, nd - got[i]);
+      if (i !== 1 && got[i] / nd < got[lowI] / need[lowI]) lowI = i;
+      return {
+        name: pfcNames[i], tag: pfcTags[i], color: pfcColors[i],
+        now: got[i], need: nd,
+        pct: Math.min(100, Math.round(got[i] / nd * 100)) + '%',
+        leftText: left > 0 ? ('あと ' + left + ' g') : '今日のぶんは足りています',
+        leftFg: left > 0 ? '#B4430F' : '#1F5233',
+        aria: pfcNames[i] + '：必要量' + nd + 'gのうち' + got[i] + 'g'
+      };
+    });
+    var lowLeft = Math.max(0, need[lowI] - got[lowI]);
+    var pfcNote = lowLeft === 0
+      ? '今日のぶんは、もうしっかりとれているよ。'
+      : (ate
+        ? ('今日のごはんで、ぐっと近づいたね。' + pfcNames[lowI] + 'はあと' + lowLeft + 'g。')
+        : (pfcNames[lowI] + 'があと' + lowLeft + 'g。食べたいものに、ちょっと足せばOK。'));
+    var pfc = {
+      kcal: String(kcal).replace(/\B(?=(\d{3})+(?!\d))/g, ','),
+      basis: PROF.sex + '・' + PROF.age + '歳・' + PROF.h + 'cm・' + PROF.w + 'kg・活動量ふつう から算出',
+      rows: pfcRows,
+      caption: ate ? '今日とった量（朝・昼・夜）' : '今日とった量（朝・昼）',
+      note: pfcNote
+    };
+
+    var E = 'eat', B = 'buy';
+    var SHOPS = {
+      ramen: [
+        ['麺屋 こがね', E, '徒歩4分・濃厚味噌', '濃い味好きに、いちばん近い一杯', '味噌ラーメン＋ほうれん草・味玉', '麺少なめが選べて、最近少なめの野菜と鉄分も足せる'],
+        ['らーめん あかり', E, '徒歩7分・鶏白湯', '鶏肉好き・こってり派のあなたに', '鶏白湯ラーメン＋ねぎ増し・味玉', 'ねぎ増しで、野菜をちょっとプラス'],
+        ['近くのコンビニ', B, '徒歩2分・チルド麺', '買って帰って、家で食べるなら', 'チルド味噌ラーメン＋おひたし・味玉', 'レンジだけでOK。足りない分は小鉢で買える']
+      ],
+      gat: [
+        ['どんぶり処 まる', E, '徒歩5分・丼もの', '辛いもの好きに、いちばん合いそう', '豚キムチ丼＋温泉卵・ナムル', 'ごはん少なめが選べて、ナムルで野菜と鉄分も'],
+        ['焼肉定食 だいち', E, '徒歩8分・定食', 'がっつり派・濃い味好きのあなたに', '焼肉定食＋ほうれん草のおひたし', '小鉢で野菜を足せる'],
+        ['駅前スーパー', B, '徒歩6分・お惣菜', '買って帰って、家で食べるなら', '豚キムチ丼弁当＋わかめスープ', 'お惣菜コーナーで野菜も一緒に買える']
+      ],
+      conbini: [
+        ['近くのコンビニ', B, '徒歩2分', 'いつもの組み合わせが、いちばん近くで', 'おにぎり＋サラダチキン＋おひたし', '最近少なめの野菜と鉄分を、ひとつ足せる'],
+        ['駅前スーパー', B, '徒歩6分・お惣菜', '野菜のお惣菜が選びやすい', 'おにぎり＋サラダチキン＋ごま和え', 'コンビニより野菜の小鉢が多い'],
+        ['おむすび屋 こめこ', E, '徒歩8分・おむすび', '卵料理好きのあなたに', 'おむすび定食＋だし巻き卵・味噌汁', 'お店で食べれば、わかめの味噌汁も付く']
+      ],
+      eatout: [
+        ['韓国ごはん ひだまり', E, '徒歩5分・スンドゥブ', '辛いもの好きに、いちばん合いそう', 'スンドゥブ定食＋ナムル・卵', '辛さが選べて、ナムルで野菜と鉄分も足せる'],
+        ['ソウル食堂 まる', E, '徒歩8分・ビビンバ', '濃い味好き・卵料理好きのあなたに', '石焼ビビンバ＋わかめスープ', '野菜たっぷり。ごはん少なめも選べる'],
+        ['駅前スーパー', B, '徒歩6分・お惣菜', '買って帰って、家で食べるなら', 'スンドゥブの素＋豆腐・卵・ほうれん草', '温めるだけ。野菜も一緒に買える']
+      ]
+    };
+    var shopSet = null;
+    if (out && group) {
+      shopSet = [
+        ['和ごはん こはる', E, '徒歩6分・定食', 'みんなの希望がそろう一軒', ch.dish + '＋野菜たっぷり和風サラダ', '肉も野菜もしっかり。' + n + '人でも入りやすい'],
+        ['ファミリー食堂 まんぷく', E, '徒歩9分・ファミレス', 'メニューが多くて、みんな選びやすい', ch.main + '＋サラダバー', 'サラダバーで野菜を足せる'],
+        ['駅前スーパー', B, '徒歩5分・お惣菜', '買って帰って、家で食べるなら', ch.main + '（お惣菜）＋カットサラダ', '作らなくてOK。' + n + '人分まとめて買える']
+      ];
+    } else if (out) {
+      shopSet = SHOPS[s.variant] || [
+        ['キッチン ひなた', E, '徒歩5分・定食', '濃い味好きのあなたに合いそう', v.dish + '＋小鉢のおひたし', '小鉢で、最近少なめの野菜と鉄分を足せる'],
+        ['駅前スーパー', B, '徒歩6分・お惣菜', '買って帰って、家で食べるなら', v.dish + '（お惣菜）＋カットサラダ', '作らなくてOK。野菜も一緒に買える'],
+        ['近くのコンビニ', B, '徒歩2分', 'いちばん近くで、すぐ買える', v.dish + '＋わかめスープ', '足りない分を、ひとつ足せる']
+      ];
+    }
+    var pinPos = [['60%', '24%'], ['17%', '58%'], ['84%', '66%']];
+    var shops = (shopSet || []).map(function (d, i) {
+      var id = 's' + (i + 1);
+      var open = s.shop === id;
+      var eat = d[1] === E;
+      return {
+        num: i + 1, name: d[0], meta: d[2], match: d[3], order: d[4], note: d[5],
+        kind: eat ? 'お店で食べる' : '買って帰る',
+        kindBg: eat ? '#FFEBD6' : '#E1F2E5',
+        kindFg: eat ? '#8A3209' : '#1F5233',
+        orderLabel: eat ? 'ここで頼むなら' : 'ここで買うなら',
+        cta: eat ? 'ここで食べる' : 'ここで買う',
+        open: open, gone: s.shopGo === id, canGo: open && !s.chosen,
+        border: open ? '#2E2219' : '#F1E6D6',
+        pinBg: open ? '#2E2219' : '#F28A3C',
+        pinColor: open ? '#FFFAF1' : '#2E2219',
+        left: pinPos[i][0], top: pinPos[i][1],
+        pick: function () { self.setState({ shop: id }); },
+        go: function () {
+          var log = (s.log || []).slice();
+          log.push({ dish: d[4] + '（' + d[0] + '）', who: todayWho, fb: '', pfc: todayPfc });
+          self.setState({ shopGo: id, chosen: true, log: log });
+        }
+      };
+    });
+    var loc = {
+      busy: !!shopSet && s.loc === 1,
+      done: !!shopSet && s.loc === 2,
+      title: '近くで食べられる・買えるお店',
+      basis: group ? 'みんなの「食べたい」と好みから選びました' : '辛いもの好き・濃い味好き・パクチーは苦手、から選びました',
+      shops: shops
+    };
+    var placeCard = function (id) {
+      var on = s.place === id;
+      return {
+        on: on,
+        border: on ? '#2E2219' : '#F1E6D6',
+        bg: on ? '#FFEBD6' : '#FFFFFF',
+        pick: function () { self.setState({ place: id }); }
+      };
+    };
+
+    if (!this._wantRef) this._wantRef = function (el) { self._want = el; };
+    if (!this._resRef) this._resRef = function (el) { self._res = el; };
+
+    return {
+      isFlow: flow,
+      isWho: flow && s.step === 'who',
+      isWant: flow && s.step === 'want',
+      isThink: flow && s.step === 'think',
+      isResult: flow && s.step === 'result',
+      isHistory: s.tab === 'history',
+      isMe: s.tab === 'me',
+      showStrip: flow && (s.step === 'want' || s.step === 'result'),
+      canRestart: flow && s.step !== 'who',
+      restart: function () { self.restart(); },
+
+      sp: { a: stp(0), b: stp(1), c: stp(2), d: stp(3) },
+      nav: { home: tab('home'), history: tab('history'), me: tab('me') },
+
+      who: {
+        any: !!s.who,
+        ready: !!s.who && !!s.place,
+        needPlace: !!s.who && !s.place,
+        hint: out ? '一緒に食べない人は、タップで外せます' : '今日は外で食べる人は、タップで外せます',
+        solo: whoCard('solo'),
+        fam: whoCard('fam'),
+        rows: whoRows,
+        cta: group ? ('この' + n + '人で、何食べたいか考えよう') : '何食べたいか、考えよう'
+      },
+      countText: countText,
+      homeLine: homeLine,
+      place: { home: placeCard('home'), out: placeCard('out') },
+      placeLabel: out ? '外で食べる' : '家で食べる',
+      pfc: pfc,
+      loc: loc,
+      rc: rc,
+      toWant: function () {
+        self.setState({ step: 'want', myWish: '', query: '', famPhase: 0, famN: 0, famChoice: null });
+      },
+
+      strip: strip,
+
+      query: s.query,
+      onQuery: function (e) { self.setState({ query: e.target.value }); },
+      onKey: function (e) {
+        if (e.key === 'Enter' && !(e.nativeEvent && e.nativeEvent.isComposing)) self.answer(self.st().query);
+      },
+      submit: function () { self.answer(self.st().query); },
+      myWish: s.myWish,
+      wantRef: this._wantRef,
+      resRef: this._resRef,
+
+      w: {
+        groupIntro: group && s.famPhase === 0,
+        asking: s.famPhase === 0,
+        answered: group && s.famPhase >= 1,
+        chips: wantChips,
+        hint: group ? 'みんなの「食べたい」を集めて、ひとつの献立にまとめるよ。' : '今日はまだ野菜少なめ。でも、食べたいものから考えてOK。',
+        affirm: /肉/.test(s.myWish || '') ? 'お肉いいね！' : 'いいね！'
+      },
+
+      f: {
+        sent: vis('sent'),
+        sentTo: sentNames.join('・'),
+        awayTag: out ? '今日は一緒に食べない' : '今日は家で食べない',
+        awayMsg: out ? '今日は別で食べて帰ります' : '今日は外で食べて帰ります',
+        mo1: vis('mo1'),
+        fa1: vis('fa1'),
+        br1: vis('br1'),
+        ai: vis('ai'),
+        choosing: choosing,
+        br2: vis('br2'),
+        fa2: vis('fa2'),
+        choiceLabel: ch.label,
+        pick: { curry: pickFn('curry'), karaage: pickFn('karaage'), shoga: pickFn('shoga'), pasta: pickFn('pasta') },
+        bar: group && s.famPhase >= 1,
+        barSend: s.famPhase === 1,
+        barWait: s.famPhase === 2 && !choosing && !ready,
+        barPick: choosing,
+        barReady: ready,
+        send: function () { self.setState({ famPhase: 2, famN: 0, famChoice: null }); self.famRun(300); },
+        summarize: function () { self.startThink(); }
+      },
+
+      think: {
+        title: group ? (n + '人のことを考えています') : 'あなたのことを考えています',
+        people: eaters.map(function (id) { return { ch: M[id].ch, color: M[id].color, fs: M[id].fs === '16px' ? '20px' : '14px' }; }),
+        items: thinkItems
+      },
+
+      resSolo: !group,
+      resGroup: group,
+      sr: {
+        affirm: v.affirm, line: v.line, dish: v.dish, msg: v.msg, memo: v.memo, concl: v.concl,
+        isRamen: s.variant === 'ramen', notRamen: s.variant !== 'ramen',
+        adds: adds, l1: layer('a1'), l2: layer('a2'), l3: layer('a3'),
+        why: soloWhy
+      },
+      g: {
+        dish: ch.dish, main: ch.main,
+        servings: n + '人分',
+        oneNote: out ? 'みんなの希望がそろう一軒にすれば、お店選びで迷わなくて大丈夫。' : '作るのは、この献立ひとつだけ。一人ひとり別の料理は作らなくて大丈夫。',
+        why: gWhy
+      },
+
+      whyOpen: !!s.whyOpen,
+      toggleWhy: function () { self.setState({ whyOpen: !s.whyOpen }); },
+      chosen: !!s.chosen,
+      notChosen: !s.chosen,
+      canChoose: !s.chosen && !out,
+      choose: function () {
+        var log = (s.log || []).slice();
+        log.push({ dish: todayDish, who: todayWho, fb: '', pfc: todayPfc });
+        self.setState({ chosen: true, log: log });
+      },
+      doneLine: group ? '決定！家族みんなに共有しました。' : '今日のごはんに決定。履歴にも入れておいたよ。',
+
+      fb: {
+        opts: fbOpts,
+        done: !!s.fb,
+        none: !s.fb,
+        reply: s.fb ? FB[s.fb].reply : ''
+      },
+
+      hist: { days: histDays },
+      me: { learned: learned }
+    };
+  }
+}
+
+__start(Component);
+</script>
+</body>
+</html>

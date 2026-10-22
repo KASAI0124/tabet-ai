@@ -150,13 +150,14 @@ body { margin: 0; background: #FFFAF1; -webkit-text-size-adjust: 100%; overscrol
       <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
         <div style="background: #E1F2E5; border-radius: 18px; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px">
           <div style="font-size: 12px; font-weight: 700; color: #1F5233">今の目標</div>
-          <div style="font-family: 'Zen Maru Gothic', sans-serif; font-weight: 700; font-size: 14px; line-height: 1.4">無理せず栄養バランスを改善したい</div>
+          <div style="font-family: 'Zen Maru Gothic', sans-serif; font-weight: 700; font-size: 14px; line-height: 1.4">{{goal.label}}</div>
         </div>
         <div style="background: #FFEBD6; border-radius: 18px; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px">
           <div style="font-size: 12px; font-weight: 700; color: #8A3209">最近の傾向</div>
           <div style="font-family: 'Zen Maru Gothic', sans-serif; font-weight: 700; font-size: 14px; line-height: 1.4">野菜と鉄分が不足しやすい</div>
         </div>
       </div>
+
     </div>
 
     <div style="display: flex; flex-direction: column; gap: 6px">
@@ -166,14 +167,12 @@ body { margin: 0; background: #FFFAF1; -webkit-text-size-adjust: 100%; overscrol
           <svg class="ic" viewBox="0 0 24 24" width="26" height="26" aria-hidden="true" style="flex: none"><path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"></path></svg>
           <div>
             <div style="font-family: 'Zen Maru Gothic', sans-serif; font-weight: 900; font-size: 17px; line-height: 1.3">家で食べる</div>
-            <div style="font-size: 12px; font-weight: 700; color: #5A4D42">家で作って食べる</div>
           </div>
         </button>
         <button type="button" aria-pressed="{{place.out.on}}" onClick="{{place.out.pick}}" style="min-height: 64px; box-sizing: border-box; border-radius: 20px; border: 2.5px solid {{place.out.border}}; background: {{place.out.bg}}; padding: 8px 12px; display: flex; align-items: center; gap: 10px; text-align: left; transition: background .2s ease">
           <svg class="ic" viewBox="0 0 24 24" width="26" height="26" aria-hidden="true" style="flex: none"><path d="M4 9l1.5-5h13L20 9"></path><path d="M4 9h16v10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"></path><path d="M9 20v-6h6v6"></path></svg>
           <div>
             <div style="font-family: 'Zen Maru Gothic', sans-serif; font-weight: 900; font-size: 17px; line-height: 1.3">外で食べる</div>
-            <div style="font-size: 12px; font-weight: 700; color: #5A4D42">お店で食べる・買う</div>
           </div>
         </button>
       </div>
@@ -185,7 +184,6 @@ body { margin: 0; background: #FFFAF1; -webkit-text-size-adjust: 100%; overscrol
         <div style="width: 40px; height: 40px; border-radius: 50%; background: #F26B5B; display: flex; align-items: center; justify-content: center; font-family: 'Zen Maru Gothic', sans-serif; font-weight: 900; font-size: 13px">自分</div>
         <div>
           <div style="font-family: 'Zen Maru Gothic', sans-serif; font-weight: 900; font-size: 22px; line-height: 1.3">ひとり</div>
-          <div style="font-size: 12px; font-weight: 700; color: #5A4D42">あなたにちょうどいい</div>
         </div>
         <sc-if value="{{who.solo.on}}" hint-placeholder-val="{{ false }}">
           <div style="position: absolute; right: 10px; top: 10px; width: 26px; height: 26px; border-radius: 50%; background: #2E2219; color: #FFFAF1; display: flex; align-items: center; justify-content: center"><svg class="ic" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></div>
@@ -234,6 +232,33 @@ body { margin: 0; background: #FFFAF1; -webkit-text-size-adjust: 100%; overscrol
         </sc-if>
       </div>
     </sc-if>
+
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <button type="button" aria-expanded="{{quick.open}}" onClick="{{quick.toggle}}" style="min-height: 52px; box-sizing: border-box; border-radius: 18px; border: 2px dashed #D8C9B6; background: #FFFFFF; padding: 8px 14px; display: flex; align-items: center; gap: 10px; text-align: left">
+        <svg class="ic" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" style="flex: none"><path d="M12 5v14M5 12h14"></path></svg>
+        <div style="flex: 1; min-width: 0">
+          <div style="font-size: 15px; font-weight: 700; line-height: 1.3">突発的に食べたものを登録</div>
+        </div>
+      </button>
+      <sc-if value="{{quick.open}}" hint-placeholder-val="{{ false }}">
+        <div class="rise" style="background: #FFFFFF; border: 1.5px solid #F1E6D6; border-radius: 20px; padding: 12px; display: flex; flex-direction: column; gap: 10px">
+          <div style="font-size: 13px; font-weight: 700; color: #5A4D42">いつ食べた？</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px">
+            <sc-for list="{{quick.slots}}" as="q" hint-placeholder-count="4">
+              <button type="button" aria-pressed="{{q.on}}" onClick="{{q.pick}}" style="height: 40px; padding: 0 14px; border-radius: 999px; background: {{q.bg}}; border: 2px solid {{q.border}}; font-size: 14px; font-weight: 700">{{q.label}}</button>
+            </sc-for>
+          </div>
+          <div style="font-size: 13px; font-weight: 700; color: #5A4D42">何を食べた？</div>
+          <div class="inp" style="height: 52px; box-sizing: border-box; display: flex; align-items: center; padding: 0 14px; background: #FFFFFF; border: 2px solid #EADCC8; border-radius: 16px">
+            <input type="text" aria-label="突発的に食べたもの" value="{{quick.text}}" onChange="{{quick.onText}}" onKeyDown="{{quick.onKey}}" placeholder="例：コンビニのからあげ、ケーキ" style="flex: 1; min-width: 0; height: 44px; border: 0; background: transparent; font: inherit; font-size: 16px; color: #2E2219">
+          </div>
+          <button type="button" onClick="{{quick.add}}" style="height: 48px; border: 0; border-radius: 999px; background: {{quick.addBg}}; color: #FFFFFF; font-size: 15px; font-weight: 700">履歴に登録する</button>
+        </div>
+      </sc-if>
+      <sc-if value="{{quick.hasDone}}" hint-placeholder-val="{{ false }}">
+        <div class="rise" style="background: #E1F2E5; color: #1F5233; border-radius: 14px; padding: 8px 12px; font-size: 13px; font-weight: 700">{{quick.done}}</div>
+      </sc-if>
+    </div>
 
     <div style="display: flex; gap: 10px; align-items: flex-start">
       <div style="width: 36px; height: 36px; flex: none; border-radius: 50%; background: #6DB58A; color: #2E2219; display: flex; align-items: center; justify-content: center">
@@ -303,17 +328,26 @@ body { margin: 0; background: #FFFAF1; -webkit-text-size-adjust: 100%; overscrol
     </div>
 
     <sc-if value="{{w.asking}}" hint-placeholder-val="{{ true }}">
-      <div class="inp" style="height: 66px; flex: none; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 0 8px 0 18px; background: #FFFFFF; border: 2px solid #F28A3C; border-radius: 24px">
-        <input type="text" aria-label="今食べたいものを教えて" value="{{query}}" onChange="{{onQuery}}" onKeyDown="{{onKey}}" placeholder="今食べたいものを教えて" style="flex: 1; min-width: 0; height: 48px; border: 0; background: transparent; font: inherit; font-size: 17px; font-weight: 500; color: #2E2219">
-        <button type="button" aria-label="これで伝える" onClick="{{submit}}" style="width: 48px; height: 48px; flex: none; border: 0; border-radius: 50%; background: #B4430F; color: #FFFFFF; display: flex; align-items: center; justify-content: center">
-          <svg class="ic" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
-        </button>
+      <sc-for list="{{w.cats}}" as="g" hint-placeholder-count="3">
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <div style="font-size: 13px; font-weight: 700; color: #5A4D42">{{g.title}}</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px">
+            <sc-for list="{{g.opts}}" as="o" hint-placeholder-count="3">
+              <button type="button" aria-pressed="{{o.on}}" onClick="{{o.pick}}" style="height: 46px; padding: 0 16px; border-radius: 999px; background: {{o.bg}}; border: 2px solid {{o.border}}; color: {{o.fg}}; font-size: 15px; font-weight: 700; white-space: nowrap; transition: background .2s ease">{{o.label}}</button>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <div style="font-size: 13px; font-weight: 700; color: #5A4D42">ほかにあれば（自由入力）</div>
+        <div class="inp" style="height: 66px; flex: none; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 0 8px 0 18px; background: #FFFFFF; border: 2px solid #F28A3C; border-radius: 24px">
+          <input type="text" aria-label="今食べたいものを教えて" value="{{query}}" onChange="{{onQuery}}" onKeyDown="{{onKey}}" placeholder="例：さっぱり、野菜多め" style="flex: 1; min-width: 0; height: 48px; border: 0; background: transparent; font: inherit; font-size: 17px; font-weight: 500; color: #2E2219">
+          <button type="button" aria-label="これで伝える" onClick="{{submit}}" style="width: 48px; height: 48px; flex: none; border: 0; border-radius: 50%; background: #B4430F; color: #FFFFFF; display: flex; align-items: center; justify-content: center">
+            <svg class="ic" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+          </button>
+        </div>
       </div>
-      <div style="display: flex; flex-wrap: wrap; gap: 8px">
-        <sc-for list="{{w.chips}}" as="c" hint-placeholder-count="6">
-          <button type="button" onClick="{{c.pick}}" style="height: 46px; padding: 0 16px; border-radius: 999px; background: #FFFFFF; border: 1.5px solid #EADCC8; font-size: 15px; font-weight: 700; white-space: nowrap">{{c.label}}</button>
-        </sc-for>
-      </div>
+      <button type="button" onClick="{{submit}}" style="width: 100%; height: 52px; flex: none; border: 0; border-radius: 999px; background: {{w.goBg}}; color: #FFFFFF; font-size: 16px; font-weight: 700">{{w.goLabel}}</button>
       <div style="display: flex; gap: 10px; align-items: flex-start">
         <div style="width: 36px; height: 36px; flex: none; border-radius: 50%; background: #6DB58A; color: #2E2219; display: flex; align-items: center; justify-content: center">
           <svg class="ic" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M9 10h.01M15 10h.01"></path><path d="M8.5 14c1 1.2 2.2 1.8 3.5 1.8s2.5-.6 3.5-1.8"></path></svg>
@@ -522,6 +556,14 @@ body { margin: 0; background: #FFFAF1; -webkit-text-size-adjust: 100%; overscrol
       <div>
         <div style="font-size: 12px; font-weight: 700; color: #B4430F">今日のあなたには</div>
         <h2 style="margin: 0; font-family: 'Zen Maru Gothic', sans-serif; font-weight: 900; font-size: 26px; line-height: 1.25">{{sr.dish}}</h2>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <div style="font-size: 12px; font-weight: 700; color: #5A4D42">候補（タップで切り替え）</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px">
+          <sc-for list="{{sr.cands}}" as="c" hint-placeholder-count="5">
+            <button type="button" aria-pressed="{{c.on}}" onClick="{{c.pick}}" style="min-height: 36px; padding: 0 12px; border-radius: 999px; background: {{c.bg}}; border: 2px solid {{c.border}}; font-size: 13px; font-weight: 700">{{c.label}}</button>
+          </sc-for>
+        </div>
       </div>
 
       <div style="display: flex; align-items: center; gap: 10px">
@@ -956,6 +998,17 @@ body { margin: 0; background: #FFFAF1; -webkit-text-size-adjust: 100%; overscrol
           </div>
         </div>
       </div>
+      <sc-if value="{{d.hasExtra}}" hint-placeholder-val="{{ false }}">
+        <sc-for list="{{d.extras}}" as="x" hint-placeholder-count="1">
+          <div style="display: flex; align-items: flex-start; gap: 10px; padding-top: 8px; border-top: 1.5px solid #F6EEE2">
+            <div style="width: 52px; flex: none; box-sizing: border-box; text-align: center; font-size: 12px; font-weight: 700; padding: 2px 0; border-radius: 999px; background: #F3E8D8; color: #5A4D42">{{x.slot}}</div>
+            <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+              <div style="font-size: 14px; font-weight: 700; line-height: 1.5">{{x.text}}</div>
+              <div style="display: flex; gap: 6px; flex-wrap: wrap"><div style="font-size: 12px; font-weight: 700; padding: 1px 10px; border-radius: 999px; background: #FFEBD6; color: #8A3209">突発・{{x.time}}に登録</div></div>
+            </div>
+          </div>
+        </sc-for>
+      </sc-if>
     </div>
   </sc-for>
 </div>
@@ -965,25 +1018,113 @@ body { margin: 0; background: #FFFAF1; -webkit-text-size-adjust: 100%; overscrol
 <div class="sc" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; overflow-y: auto; box-sizing: border-box; padding: 4px 16px 20px; display: flex; flex-direction: column; gap: 12px">
   <div>
     <h1 style="margin: 0; font-family: 'Zen Maru Gothic', sans-serif; font-weight: 900; font-size: 26px; line-height: 1.3">AIが知っている、わたし</h1>
+    <div style="display: flex; gap: 8px; align-items: flex-start; font-size: 13px; font-weight: 500; color: #5A4D42; padding: 6px 0 0">
+      <svg class="ic" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" style="flex: none; margin-top: 1px"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"></path><path d="M19 16v4M17 18h4"></path></svg>
+      <div>食べたものや選んだ料理から、AIが少しずつあなたを理解していきます。</div>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 8px">
+    <button type="button" aria-expanded="{{prof.open}}" onClick="{{prof.toggle}}" style="min-height: 52px; box-sizing: border-box; border-radius: 18px; border: 2px solid #2E2219; background: #FFFFFF; padding: 8px 14px; display: flex; align-items: center; gap: 10px; text-align: left">
+      <svg class="ic" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" style="flex: none"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c1.5-4 4.5-6 8-6s6.5 2 8 6"></path></svg>
+      <div style="flex: 1; min-width: 0">
+        <div style="font-size: 15px; font-weight: 700; line-height: 1.3">{{prof.btn}}</div>
+        <div style="font-size: 12px; font-weight: 500; color: #5A4D42">{{prof.summary}}</div>
+      </div>
+    </button>
+    <sc-if value="{{prof.open}}" hint-placeholder-val="{{ false }}">
+      <div class="rise" style="background: #FFFFFF; border: 1.5px solid #F1E6D6; border-radius: 20px; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px">
+        <div style="display: flex; align-items: center; gap: 10px">
+          <div style="width: 64px; flex: none; font-size: 14px; font-weight: 700">性別</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px">
+            <sc-for list="{{prof.sexes}}" as="o" hint-placeholder-count="3">
+              <button type="button" aria-pressed="{{o.on}}" onClick="{{o.pick}}" style="height: 38px; padding: 0 14px; border-radius: 999px; background: {{o.bg}}; border: 2px solid {{o.border}}; font-size: 14px; font-weight: 700">{{o.label}}</button>
+            </sc-for>
+          </div>
+        </div>
+        <label style="display: flex; align-items: center; gap: 10px">
+          <div style="width: 64px; flex: none; font-size: 14px; font-weight: 700">年齢</div>
+          <div class="inp" style="flex: 1; min-width: 0; height: 44px; box-sizing: border-box; display: flex; align-items: center; gap: 6px; padding: 0 12px; background: #FFFFFF; border: 2px solid #EADCC8; border-radius: 14px">
+            <input type="number" inputmode="numeric" aria-label="年齢" value="{{prof.age}}" onChange="{{prof.on.age}}" style="flex: 1; min-width: 0; height: 36px; border: 0; background: transparent; font: inherit; font-size: 16px; color: #2E2219">
+            <span style="font-size: 13px; font-weight: 700; color: #5A4D42">歳</span>
+          </div>
+        </label>
+        <label style="display: flex; align-items: center; gap: 10px">
+          <div style="width: 64px; flex: none; font-size: 14px; font-weight: 700">身長</div>
+          <div class="inp" style="flex: 1; min-width: 0; height: 44px; box-sizing: border-box; display: flex; align-items: center; gap: 6px; padding: 0 12px; background: #FFFFFF; border: 2px solid #EADCC8; border-radius: 14px">
+            <input type="number" inputmode="numeric" aria-label="身長" value="{{prof.h}}" onChange="{{prof.on.h}}" style="flex: 1; min-width: 0; height: 36px; border: 0; background: transparent; font: inherit; font-size: 16px; color: #2E2219">
+            <span style="font-size: 13px; font-weight: 700; color: #5A4D42">cm</span>
+          </div>
+        </label>
+        <label style="display: flex; align-items: center; gap: 10px">
+          <div style="width: 64px; flex: none; font-size: 14px; font-weight: 700">体重</div>
+          <div class="inp" style="flex: 1; min-width: 0; height: 44px; box-sizing: border-box; display: flex; align-items: center; gap: 6px; padding: 0 12px; background: #FFFFFF; border: 2px solid #EADCC8; border-radius: 14px">
+            <input type="number" inputmode="numeric" aria-label="体重" value="{{prof.w}}" onChange="{{prof.on.w}}" style="flex: 1; min-width: 0; height: 36px; border: 0; background: transparent; font: inherit; font-size: 16px; color: #2E2219">
+            <span style="font-size: 13px; font-weight: 700; color: #5A4D42">kg</span>
+          </div>
+        </label>
+        <div style="display: flex; align-items: center; gap: 10px">
+          <div style="width: 64px; flex: none; font-size: 14px; font-weight: 700">活動量</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px">
+            <sc-for list="{{prof.acts}}" as="o" hint-placeholder-count="3">
+              <button type="button" aria-pressed="{{o.on}}" onClick="{{o.pick}}" style="height: 38px; padding: 0 14px; border-radius: 999px; background: {{o.bg}}; border: 2px solid {{o.border}}; font-size: 14px; font-weight: 700">{{o.label}}</button>
+            </sc-for>
+          </div>
+        </div>
+        <label style="display: flex; align-items: center; gap: 10px">
+          <div style="width: 64px; flex: none; font-size: 14px; font-weight: 700">アレルギー</div>
+          <div class="inp" style="flex: 1; min-width: 0; height: 44px; box-sizing: border-box; display: flex; align-items: center; padding: 0 12px; background: #FFFFFF; border: 2px solid #EADCC8; border-radius: 14px">
+            <input type="text" aria-label="アレルギー" value="{{prof.allergy}}" onChange="{{prof.on.allergy}}" placeholder="例：えび、そば（なければ空欄）" style="flex: 1; min-width: 0; height: 36px; border: 0; background: transparent; font: inherit; font-size: 15px; color: #2E2219">
+          </div>
+        </label>
+        <div style="font-size: 12px; font-weight: 500; color: #5A4D42">入力するとPFCバランスの必要量にすぐ反映されます。</div>
+        <button type="button" onClick="{{prof.save}}" style="height: 48px; border: 0; border-radius: 999px; background: #B4430F; color: #FFFFFF; font-size: 15px; font-weight: 700">登録する</button>
+      </div>
+    </sc-if>
+    <sc-if value="{{prof.hasDone}}" hint-placeholder-val="{{ false }}">
+      <div class="rise" style="background: #E1F2E5; color: #1F5233; border-radius: 14px; padding: 8px 12px; font-size: 13px; font-weight: 700">{{prof.done}}</div>
+    </sc-if>
   </div>
 
   <div style="background: #FFFFFF; border: 1.5px solid #F1E6D6; border-radius: 22px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px">
-    <div style="font-size: 13px; font-weight: 700; color: #5A4D42">好み</div>
+    <div style="font-size: 13px; font-weight: 700; color: #5A4D42">好み（5つの味覚・5段階）</div>
     <div style="display: flex; align-items: center; justify-content: space-between">
-      <div style="font-size: 15px; font-weight: 700">辛い</div>
-      <div role="img" aria-label="5段階中4" style="font-size: 20px; line-height: 1; letter-spacing: 3px"><span style="color: #E0652B">★★★★</span><span style="color: #E3D5C1">★</span></div>
-    </div>
-    <div style="display: flex; align-items: center; justify-content: space-between">
-      <div style="font-size: 15px; font-weight: 700">甘い</div>
+      <div style="font-size: 15px; font-weight: 700">甘味</div>
       <div role="img" aria-label="5段階中3" style="font-size: 20px; line-height: 1; letter-spacing: 3px"><span style="color: #E0652B">★★★</span><span style="color: #E3D5C1">★★</span></div>
     </div>
     <div style="display: flex; align-items: center; justify-content: space-between">
-      <div style="font-size: 15px; font-weight: 700">濃い味</div>
+      <div style="font-size: 15px; font-weight: 700">塩味</div>
       <div role="img" aria-label="5段階中4" style="font-size: 20px; line-height: 1; letter-spacing: 3px"><span style="color: #E0652B">★★★★</span><span style="color: #E3D5C1">★</span></div>
     </div>
     <div style="display: flex; align-items: center; justify-content: space-between">
-      <div style="font-size: 15px; font-weight: 700">さっぱり</div>
+      <div style="font-size: 15px; font-weight: 700">酸味</div>
       <div role="img" aria-label="5段階中2" style="font-size: 20px; line-height: 1; letter-spacing: 3px"><span style="color: #E0652B">★★</span><span style="color: #E3D5C1">★★★</span></div>
+    </div>
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <div style="font-size: 15px; font-weight: 700">苦味</div>
+      <div role="img" aria-label="5段階中1" style="font-size: 20px; line-height: 1; letter-spacing: 3px"><span style="color: #E0652B">★</span><span style="color: #E3D5C1">★★★★</span></div>
+    </div>
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <div style="font-size: 15px; font-weight: 700">うま味</div>
+      <div role="img" aria-label="5段階中5" style="font-size: 20px; line-height: 1; letter-spacing: 3px"><span style="color: #E0652B">★★★★★</span><span style="color: #E3D5C1"></span></div>
+    </div>
+    <div style="height: 1.5px; background: #F6EEE2; margin: 2px 0"></div>
+    <div style="font-size: 13px; font-weight: 700; color: #5A4D42">味の方向</div>
+    <div style="display: flex; align-items: center; gap: 10px">
+      <div style="width: 64px; flex: none; font-size: 14px; font-weight: 700; text-align: right">薄味</div>
+      <div role="img" aria-label="薄味と濃味の5段階のうち4（濃味寄り）" style="flex: 1; min-width: 0; position: relative; height: 24px; display: flex; align-items: center; justify-content: space-between">
+        <div style="position: absolute; left: 4px; right: 4px; top: 11px; height: 2px; background: #EADCC8"></div>
+        <div style="position: relative; width: 100%; display: flex; align-items: center; justify-content: space-between"><div style="width: 10px; height: 10px; border-radius: 50%; background: #E3D5C1; "></div><div style="width: 10px; height: 10px; border-radius: 50%; background: #E3D5C1; "></div><div style="width: 10px; height: 10px; border-radius: 50%; background: #E3D5C1; "></div><div style="width: 18px; height: 18px; border-radius: 50%; background: #E0652B; border: 3px solid #FFFFFF; box-shadow: 0 0 0 2px #E0652B;"></div><div style="width: 10px; height: 10px; border-radius: 50%; background: #E3D5C1; "></div></div>
+      </div>
+      <div style="width: 64px; flex: none; font-size: 14px; font-weight: 700">濃味</div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 10px">
+      <div style="width: 64px; flex: none; font-size: 14px; font-weight: 700; text-align: right">さっぱり</div>
+      <div role="img" aria-label="さっぱりとこってりの5段階のうち4（こってり寄り）" style="flex: 1; min-width: 0; position: relative; height: 24px; display: flex; align-items: center; justify-content: space-between">
+        <div style="position: absolute; left: 4px; right: 4px; top: 11px; height: 2px; background: #EADCC8"></div>
+        <div style="position: relative; width: 100%; display: flex; align-items: center; justify-content: space-between"><div style="width: 10px; height: 10px; border-radius: 50%; background: #E3D5C1; "></div><div style="width: 10px; height: 10px; border-radius: 50%; background: #E3D5C1; "></div><div style="width: 10px; height: 10px; border-radius: 50%; background: #E3D5C1; "></div><div style="width: 18px; height: 18px; border-radius: 50%; background: #E0652B; border: 3px solid #FFFFFF; box-shadow: 0 0 0 2px #E0652B;"></div><div style="width: 10px; height: 10px; border-radius: 50%; background: #E3D5C1; "></div></div>
+      </div>
+      <div style="width: 64px; flex: none; font-size: 14px; font-weight: 700">こってり</div>
     </div>
   </div>
 
@@ -1009,7 +1150,19 @@ body { margin: 0; background: #FFFAF1; -webkit-text-size-adjust: 100%; overscrol
   <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
     <div style="background: #E1F2E5; border-radius: 22px; padding: 14px; display: flex; flex-direction: column; gap: 4px">
       <div style="font-size: 13px; font-weight: 700; color: #1F5233">今の目標</div>
-      <div style="font-family: 'Zen Maru Gothic', sans-serif; font-weight: 700; font-size: 15px; line-height: 1.45">無理せず栄養バランスを改善したい</div>
+      <div style="font-family: 'Zen Maru Gothic', sans-serif; font-weight: 700; font-size: 15px; line-height: 1.45">{{goal.label}}</div>
+      <button type="button" aria-expanded="{{goal.open}}" onClick="{{goal.toggle}}" style="align-self: flex-start; margin-top: 4px; height: 32px; padding: 0 12px; border-radius: 999px; border: 1.5px solid #2B6E45; background: #FFFFFF; color: #1F5233; font-size: 12px; font-weight: 700">{{goal.btn}}</button>
+      <sc-if value="{{goal.open}}" hint-placeholder-val="{{ false }}">
+      <div class="rise" style="background: #FFFFFF; border: 1.5px solid #F1E6D6; border-radius: 20px; padding: 12px; display: flex; flex-direction: column; gap: 8px">
+        <div style="font-size: 13px; font-weight: 700; color: #5A4D42">目標をえらぶ（PFCの目安も変わります）</div>
+        <sc-for list="{{goal.opts}}" as="o" hint-placeholder-count="5">
+          <button type="button" aria-pressed="{{o.on}}" onClick="{{o.pick}}" style="min-height: 48px; box-sizing: border-box; border-radius: 14px; border: 2px solid {{o.border}}; background: {{o.bg}}; padding: 6px 12px; display: flex; flex-direction: column; align-items: flex-start; text-align: left">
+            <div style="font-size: 14px; font-weight: 700; line-height: 1.4">{{o.label}}</div>
+            <div style="font-size: 12px; font-weight: 500; color: #5A4D42">{{o.note}}</div>
+          </button>
+        </sc-for>
+      </div>
+    </sc-if>
     </div>
     <div style="background: #FFEBD6; border-radius: 22px; padding: 14px; display: flex; flex-direction: column; gap: 4px">
       <div style="font-size: 13px; font-weight: 700; color: #8A3209">最近の傾向</div>
@@ -1030,10 +1183,6 @@ body { margin: 0; background: #FFFAF1; -webkit-text-size-adjust: 100%; overscrol
     </sc-for>
   </div>
 
-  <div style="display: flex; gap: 8px; align-items: flex-start; font-size: 13px; font-weight: 500; color: #5A4D42; padding: 0 4px">
-    <svg class="ic" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" style="flex: none; margin-top: 1px"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"></path><path d="M19 16v4M17 18h4"></path></svg>
-    <div>食べたものや選んだ料理から、AIが少しずつあなたを理解していきます。</div>
-  </div>
 </div>
 </sc-if>
 
@@ -1170,7 +1319,8 @@ class Component extends DCLogic {
     var d = {
       tab: 'home', step: 'who', who: null,
       mo: true, fa: true, br: true,
-      query: '', myWish: '', variant: 'ramen',
+      query: '', myWish: '', variant: 'ramen', pAct: null, pGenre: null, pStaple: null,
+      quickOpen: false, quickText: '', quickSlot: '間食', quickDone: '', extra: [], goal: 'balance', goalOpen: false, prof: null, profOpen: false, profDone: '',
       famPhase: 0, famN: 0, famChoice: null,
       thinkN: 0,
       a1: true, a2: true, a3: true,
@@ -1246,7 +1396,7 @@ class Component extends DCLogic {
     clearTimeout(this._t);
     clearTimeout(this._t2);
     clearTimeout(this._t3);
-    this.setState({ step: 'think', thinkN: 0, whyOpen: false, chosen: false, fb: null, a1: true, a2: true, a3: true, loc: 0, shop: 's1', shopGo: null, recipeOpen: false });
+    this.setState({ step: 'think', thinkN: 0, whyOpen: false, chosen: false, fb: null, a1: true, a2: true, a3: true, loc: 0, shop: 's1', shopGo: null, recipeOpen: false, cand: 0 });
     var tick = function () {
       var n = self.st().thinkN;
       if (n >= 5) {
@@ -1273,16 +1423,32 @@ class Component extends DCLogic {
     return 'free';
   }
 
+  pickText(s) {
+    return [s.pAct, s.pGenre, s.pStaple].filter(function (x) { return !!x; }).join('・');
+  }
+
+  variantOfPick(s, free) {
+    var fv = free ? this.variantOf(free) : 'free';
+    if (fv !== 'free') return fv;
+    if (s.pStaple === '麺' && (!s.pGenre || s.pGenre === '中華')) return 'ramen';
+    if (s.pGenre || s.pStaple) return 'pick';
+    if (s.pAct === '料理したくない') return 'nocook';
+    if (s.pAct === '料理する') return 'any';
+    return free ? 'free' : 'ramen';
+  }
+
   answer(text) {
     var s = this.st();
     var group = this.isGroup(s);
-    var t = String(text || '').trim();
-    if (!t) t = group ? '肉が食べたい' : 'ラーメン食べたい';
+    var free = String(text || '').trim();
+    var picked = this.pickText(s);
+    var t = [picked, free].filter(function (x) { return !!x; }).join('・');
+    if (!t) return;
     if (group) {
       this.setState({ myWish: t, famPhase: 1, famN: 0, famChoice: null, query: '' });
       return;
     }
-    this.setState({ myWish: t, variant: this.variantOf(t), query: '' });
+    this.setState({ myWish: t, variant: picked ? this.variantOfPick(s, free) : this.variantOf(free), query: '' });
     this.startThink();
   }
 
@@ -1292,7 +1458,7 @@ class Component extends DCLogic {
     this.setState({
       tab: 'home', step: 'who', who: null,
       mo: true, fa: true, br: true,
-      query: '', myWish: '',
+      query: '', myWish: '', pAct: null, pGenre: null, pStaple: null,
       famPhase: 0, famN: 0, famChoice: null,
       thinkN: 0, a1: true, a2: true, a3: true,
       whyOpen: false, chosen: false, fb: null,
@@ -1307,6 +1473,23 @@ class Component extends DCLogic {
     var s = this.st();
     var flow = s.tab === 'home';
     var group = this.isGroup(s);
+    var GOALS = {
+      balance: { label: '無理せず栄養バランスを改善したい', note: 'P15%・F25%・C60%', r: [0.15, 0.25, 0.60], f: 1 },
+      diet: { label: '無理なく体重を減らしたい', note: 'エネルギー少なめ（約85%）・P20%', r: [0.20, 0.25, 0.55], f: 0.85 },
+      muscle: { label: '筋肉をつけたい', note: 'たんぱく質多め・P25%', r: [0.25, 0.25, 0.50], f: 1.05 },
+      salt: { label: '塩分をひかえめにしたい', note: 'PFCはそのまま。提案で減塩を優先', r: [0.15, 0.25, 0.60], f: 1 },
+      veg: { label: '野菜をしっかりとりたい', note: 'PFCはそのまま。提案で野菜を優先', r: [0.15, 0.25, 0.60], f: 1 }
+    };
+    var G = GOALS[s.goal] || GOALS.balance;
+    var goal = {
+      label: G.label, open: !!s.goalOpen,
+      btn: s.goalOpen ? 'とじる' : '目標を変更',
+      toggle: function () { self.setState({ goalOpen: !s.goalOpen }); },
+      opts: Object.keys(GOALS).map(function (k) {
+        var on = (s.goal || 'balance') === k;
+        return { label: GOALS[k].label, note: GOALS[k].note, on: on, bg: on ? '#E1F2E5' : '#FFFFFF', border: on ? '#2B6E45' : '#EADCC8', pick: function () { self.setState({ goal: k, goalOpen: false }); } };
+      })
+    };
     var out = s.place === 'out';
     var awayShort = out ? '別で食べる' : '外で食べる';
     var awayLabel = out ? '今日は一緒に食べない' : '今日は外で食べる';
@@ -1315,6 +1498,12 @@ class Component extends DCLogic {
     var vis = function (id) { var i = q.indexOf(id); return s.famPhase === 2 && i >= 0 && i < s.famN; };
 
     var short = function (t) {
+      if (/・/.test(t) || /^(料理する|料理したくない)$/.test(t)) {
+        var ps = t.split('・').filter(function (x) { return x !== '料理する' && x !== '料理したくない'; });
+        if (!ps.length) return /したくない/.test(t) ? '作らない' : '作る';
+        t = ps.slice(0, 2).join('');
+        return t.length > 6 ? t.slice(0, 6) + '…' : t;
+      }
       if (/肉/.test(t)) return '肉';
       if (/がっつり|ガッツリ/.test(t)) return 'がっつり';
       if (/さっぱり/.test(t)) return 'さっぱり';
@@ -1440,6 +1629,22 @@ class Component extends DCLogic {
         ? ['ラーメン食べたい', 'がっつり食べたい', '韓国料理がいい', 'コンビニがいい', 'なんでもいい']
         : ['ラーメン食べたい', 'がっつり食べたい', '料理したくない', 'なんでもいい']);
 
+    var catOpt = function (key, label) {
+      var on = s[key] === label;
+      return {
+        label: label, on: on,
+        bg: on ? '#FFEBD6' : '#FFFFFF',
+        border: on ? '#2E2219' : '#EADCC8',
+        fg: '#2E2219',
+        pick: function () { var o = {}; o[key] = on ? null : label; self.setState(o); }
+      };
+    };
+    var wantCats = [];
+    if (!out) wantCats.push({ title: '① 行動', opts: [catOpt('pAct', '料理する'), catOpt('pAct', '料理したくない')] });
+    wantCats.push({ title: (out ? '① ' : '② ') + 'ジャンル', opts: ['和食', '洋食', '中華', 'カフェ'].map(function (x) { return catOpt('pGenre', x); }) });
+    wantCats.push({ title: (out ? '② ' : '③ ') + '主食', opts: ['麺', 'ごはん', 'パン'].map(function (x) { return catOpt('pStaple', x); }) });
+    var canGo = !!(s.pAct || s.pGenre || s.pStaple || String(s.query || '').trim());
+
     var sentNames = [];
     if (s.mo) sentNames.push('母');
     if (s.fa) sentNames.push('父');
@@ -1506,6 +1711,29 @@ class Component extends DCLogic {
         concl: 'だから、迷った日はあなたの「好き」から。野菜と鉄分も一緒にとれる一皿に。',
         pref: '鶏肉が好き・辛いものが好き'
       },
+      pick: (function () {
+        var T = {
+          '和食': { '麺': 'きつねうどん', 'ごはん': '鶏の照り焼き定食', 'パン': '和風ツナトースト', '': '鶏の照り焼き定食' },
+          '洋食': { '麺': 'チキンのトマトパスタ', 'ごはん': 'オムライス', 'パン': 'チキンのサンドイッチ', '': 'オムライス' },
+          '中華': { '麺': '味噌ラーメン', 'ごはん': '麻婆豆腐丼', 'パン': '肉まん', '': '麻婆豆腐丼' },
+          'カフェ': { '麺': 'ナポリタン', 'ごはん': 'ロコモコ', 'パン': 'たまごサンド', '': 'たまごサンド' },
+          '': { '麺': '味噌ラーメン', 'ごはん': '鶏肉と野菜の甘辛炒め丼', 'パン': 'たまごサンド', '': '鶏肉と野菜の甘辛炒め' }
+        };
+        var base = T[s.pGenre || ''][s.pStaple || ''];
+        var noCook = s.pAct === '料理したくない';
+        var label = [s.pGenre, s.pStaple].filter(function (x) { return !!x; }).join('・');
+        return {
+          affirm: noCook ? '作らない日、あっていい！' : (label + '、いいね！'),
+          line: noCook ? '買って帰るだけでOKなものにしよう。最近少なめの野菜と鉄分も、足すだけで。' : '最近、野菜と鉄分が少なめだから、今日はちょっと足してバランスを取ろう。',
+          dish: base + (noCook ? '（お惣菜でOK）' : ''),
+          adds: [['温泉卵', 'たんぱく質'], ['ほうれん草', '野菜・鉄分'], ['わかめスープ', 'ミネラル']],
+          msg: '選んだ気分はそのまま。足りないものだけプラス。',
+          memo: 'この前「量が多かった」って言っていたから、少なめにしておくね。',
+          w3: ['今日の気分', [s.pAct, s.pGenre, s.pStaple].filter(function (x) { return !!x; }).join('・')], w4: ['味の好み', '濃い味が好き'],
+          concl: 'だから、選んだジャンルと主食はそのまま。足りない分だけ、ひとつ足して。',
+          pref: '濃い味が好き・鶏肉が好き'
+        };
+      })(),
       free: {
         affirm: freeDish + '、いいね！', line: '最近、野菜と鉄分が少なめだから、今日はちょっと足してバランスを取ろう。',
         dish: freeDish, adds: [['温泉卵', 'たんぱく質'], ['ほうれん草', '野菜・鉄分'], ['わかめスープ', 'ミネラル']],
@@ -1517,6 +1745,39 @@ class Component extends DCLogic {
       }
     };
     var v = V[s.variant] || V.ramen;
+    var CANDS = {
+      ramen: ['味噌ラーメン', '醤油ラーメン', '塩ラーメン', '担々麺', 'とんこつラーメン'],
+      gat: ['豚キムチ丼', '牛丼', 'かつ丼', 'ステーキ丼', '唐揚げ定食'],
+      conbini: ['おにぎり＋サラダチキン', 'サンドイッチ＋スープ', '幕の内弁当', '冷やしうどん＋ゆで卵', 'パスタサラダ＋おにぎり'],
+      eatout: ['スンドゥブ定食', 'ビビンバ', 'チヂミ定食', 'プルコギ丼', '冷麺'],
+      nocook: ['からあげ弁当', '幕の内弁当', 'のり弁当', '焼き鮭弁当', '生姜焼き弁当'],
+      any: ['鶏肉と野菜の甘辛炒め', '親子丼', 'ポトフ', '豚しゃぶサラダ', '鮭のちゃんちゃん焼き']
+    };
+    var GS = {
+      '和食': { '麺': ['きつねうどん', '月見そば', '鍋焼きうどん', '冷やしたぬきそば', '鶏南蛮そば'], 'ごはん': ['鶏の照り焼き定食', '鮭の塩焼き定食', '親子丼', '豚汁定食', 'さばの味噌煮定食'], 'パン': ['和風ツナトースト', '照り焼きチキンサンド', 'しらすトースト', '味噌マヨトースト', 'きんぴらサンド'] },
+      '洋食': { '麺': ['チキンのトマトパスタ', 'カルボナーラ', 'ミートソース', 'ペペロンチーノ', 'きのこのクリームパスタ'], 'ごはん': ['オムライス', 'ハンバーグ定食', 'チキンドリア', 'ハヤシライス', 'ポークカレー'], 'パン': ['チキンのサンドイッチ', 'クロックムッシュ', 'ハンバーガー', 'BLTサンド', 'グラタントースト'] },
+      '中華': { '麺': ['味噌ラーメン', '担々麺', 'タンメン', '焼きそば', '冷やし中華'], 'ごはん': ['麻婆豆腐丼', '天津飯', 'チャーハン', '中華丼', '回鍋肉定食'], 'パン': ['肉まん', '中華風チキンサンド', '焼き小籠包', 'ピザまん', 'ごま団子とスープ'] },
+      'カフェ': { '麺': ['ナポリタン', 'たらこパスタ', 'ジェノベーゼ', 'スープパスタ', '冷製トマトパスタ'], 'ごはん': ['ロコモコ', 'タコライス', 'ガパオライス', 'キーマカレー', 'オムハヤシ'], 'パン': ['たまごサンド', 'ホットサンド', 'フレンチトースト', 'アボカドトースト', 'パニーニ'] }
+    };
+    var candList;
+    if (s.variant === 'pick') {
+      var g = s.pGenre, st2 = s.pStaple;
+      if (g && st2) candList = GS[g][st2].slice();
+      else if (g) candList = [GS[g]['ごはん'][0], GS[g]['麺'][0], GS[g]['パン'][0], GS[g]['ごはん'][1], GS[g]['麺'][1]];
+      else if (st2) candList = [GS['和食'][st2][0], GS['洋食'][st2][0], GS['中華'][st2][0], GS['カフェ'][st2][0], GS['和食'][st2][1]];
+      else candList = CANDS.any.slice();
+    } else if (s.variant === 'free') {
+      candList = [freeDish].concat(CANDS.any.slice(0, 4));
+    } else {
+      candList = (CANDS[s.variant] || CANDS.ramen).slice();
+    }
+    var candIdx = Math.min(s.cand || 0, candList.length - 1);
+    var candSuffix = (s.variant === 'pick' && s.pAct === '料理したくない') ? '（お惣菜でOK）' : '';
+    v = Object.assign({}, v, { dish: candList[candIdx] + candSuffix });
+    var soloCands = candList.map(function (d, i) {
+      var on = i === candIdx;
+      return { label: d, on: on, bg: on ? '#FFEBD6' : '#FFFFFF', border: on ? '#2E2219' : '#EADCC8', pick: function () { self.setState({ cand: i, recipeOpen: false }); } };
+    });
     var addKeys = ['a1', 'a2', 'a3'];
     var adds = v.adds.map(function (a, i) {
       var key = addKeys[i];
@@ -1535,11 +1796,11 @@ class Component extends DCLogic {
       { tag: '栄養', text: '鉄分が不足しやすい', bg: '#E1F2E5', fg: '#1F5233' },
       { tag: v.w3[0], text: v.w3[1], bg: '#FFEBD6', fg: '#8A3209' },
       { tag: v.w4[0], text: v.w4[1], bg: '#FFE3DE', fg: '#8F2A1E' },
-      { tag: '目標', text: '「無理なく栄養バランスを改善したい」という目標', bg: '#FFF0C4', fg: '#5A4D42' }
+      { tag: '目標', text: '「' + G.label + '」という目標', bg: '#FFF0C4', fg: '#5A4D42' }
     ];
     var onAdds = adds.filter(function (a) { return a.on; }).map(function (a) { return a.label; });
     var soloFull = v.dish + (onAdds.length ? '＋' + onAdds.join('・') : '');
-    var DISH_PFC = { ramen: [22, 18, 75], gat: [26, 20, 85], conbini: [24, 8, 48], eatout: [24, 16, 70], nocook: [24, 22, 80], any: [28, 14, 60], free: [22, 16, 70] };
+    var DISH_PFC = { ramen: [22, 18, 75], gat: [26, 20, 85], conbini: [24, 8, 48], eatout: [24, 16, 70], nocook: [24, 22, 80], any: [28, 14, 60], free: [22, 16, 70], pick: [24, 16, 70] };
     var ADD_PFC = { a1: [6, 5, 1], a2: [1, 0, 1], a3: [0, 0, 1] };
     var soloPfc = (DISH_PFC[s.variant] || DISH_PFC.ramen).slice();
     addKeys.forEach(function (k) {
@@ -1580,7 +1841,7 @@ class Component extends DCLogic {
       ['味の好み・好きな料理', v.pref],
       ['最近食べたもの', 'この3日間、野菜が少なめ'],
       ['不足しやすい栄養', '野菜と鉄分'],
-      ['健康目標', '無理なく栄養バランスを改善したい']
+      ['健康目標', G.label]
     ];
     var thinkItems = thinkRaw.map(function (r, i) {
       var done = i < s.thinkN;
@@ -1631,6 +1892,33 @@ class Component extends DCLogic {
       { when: 'おととい', border: '#F1E6D6', am: slot('おにぎり'), noon: slot('からあげ弁当'), pm: slot('醤油ラーメン', '', '量が多かった'), snack: slot('') },
       { when: '3日前', border: '#F1E6D6', am: slot('トースト'), noon: slot('カルボナーラ'), pm: slot('鮭の塩焼き定食', '家族4人', 'また食べたい'), snack: slot('プリン') }
     ];
+
+    var extras = (s.extra || []).map(function (x) { return { slot: x.slot, text: x.text, time: x.time }; });
+    histDays.forEach(function (d, i) { d.extras = i === 0 ? extras : []; d.hasExtra = i === 0 && extras.length > 0; });
+    var quickAdd = function () {
+      var st = self.st();
+      var t = String(st.quickText || '').trim();
+      if (!t) return;
+      var now = new Date();
+      var time = now.getHours() + ':' + ('0' + now.getMinutes()).slice(-2);
+      var ex = (st.extra || []).concat([{ slot: st.quickSlot, text: t, time: time }]);
+      self.setState({ extra: ex, quickText: '', quickOpen: false, quickDone: '「' + t + '」を履歴に登録しました（' + st.quickSlot + '）' });
+    };
+    var quick = {
+      open: !!s.quickOpen,
+      toggle: function () { self.setState({ quickOpen: !s.quickOpen, quickDone: '' }); },
+      slots: ['朝', '昼', '夜', '間食'].map(function (x) {
+        var on = s.quickSlot === x;
+        return { label: x, on: on, bg: on ? '#FFEBD6' : '#FFFFFF', border: on ? '#2E2219' : '#EADCC8', pick: function () { self.setState({ quickSlot: x }); } };
+      }),
+      text: s.quickText,
+      onText: function (e) { self.setState({ quickText: e.target.value }); },
+      onKey: function (e) { if (e.key === 'Enter' && !(e.nativeEvent && e.nativeEvent.isComposing)) quickAdd(); },
+      add: quickAdd,
+      addBg: String(s.quickText || '').trim() ? '#B4430F' : '#C9BBA8',
+      done: s.quickDone || '',
+      hasDone: !!s.quickDone
+    };
 
     var learned = [];
     if (s.lastFb) {
@@ -1691,7 +1979,7 @@ class Component extends DCLogic {
     if (!out && group) {
       rcData = GROUP_RECIPES[s.famChoice] || GROUP_RECIPES.karaage;
       rcIngs = rcData.ings.concat(SALAD);
-    } else if (!out && RECIPES[s.variant]) {
+    } else if (!out && RECIPES[s.variant] && !(s.cand > 0)) {
       rcData = RECIPES[s.variant];
       rcIngs = rcData.ings.slice();
       addKeys.forEach(function (k, i) { if (s[k]) rcIngs.push(rcData.addIngs[i]); });
@@ -1710,10 +1998,32 @@ class Component extends DCLogic {
 
     var todayPfc = group ? [32, 18, 80] : soloPfc;
 
-    var PROF = { sex: '女性', age: 24, h: 160, w: 52, act: 1.55 };
+    var ACTS = { 'ひくい': 1.4, 'ふつう': 1.55, 'たかい': 1.75 };
+    var P0 = s.prof || {};
+    var pnum = function (x, d) { var n2 = parseFloat(x); return isFinite(n2) && n2 > 0 ? n2 : d; };
+    var PROF = { sex: P0.sex || '女性', age: pnum(P0.age, 24), h: pnum(P0.h, 160), w: pnum(P0.w, 52), actLabel: P0.act || 'ふつう' };
+    PROF.act = ACTS[PROF.actLabel];
+    var setProf = function (k, val) { var np = Object.assign({}, self.st().prof || {}); np[k] = val; self.setState({ prof: np, profDone: '' }); };
+    var profUi = {
+      open: !!s.profOpen,
+      btn: s.profOpen ? '個人情報をとじる' : '個人情報を登録する',
+      summary: PROF.sex + '・' + PROF.age + '歳・' + PROF.h + 'cm・' + PROF.w + 'kg・活動量' + PROF.actLabel + (P0.allergy ? '・アレルギー：' + P0.allergy : ''),
+      toggle: function () { self.setState({ profOpen: !s.profOpen, profDone: '' }); },
+      sexes: ['女性', '男性'].map(function (x) { var on = PROF.sex === x; return { label: x, on: on, bg: on ? '#FFEBD6' : '#FFFFFF', border: on ? '#2E2219' : '#EADCC8', pick: function () { setProf('sex', x); } }; }),
+      acts: ['ひくい', 'ふつう', 'たかい'].map(function (x) { var on = PROF.actLabel === x; return { label: x, on: on, bg: on ? '#FFEBD6' : '#FFFFFF', border: on ? '#2E2219' : '#EADCC8', pick: function () { setProf('act', x); } }; }),
+      age: P0.age != null ? P0.age : PROF.age, h: P0.h != null ? P0.h : PROF.h, w: P0.w != null ? P0.w : PROF.w, allergy: P0.allergy || '',
+      on: {
+        age: function (e) { setProf('age', e.target.value); },
+        h: function (e) { setProf('h', e.target.value); },
+        w: function (e) { setProf('w', e.target.value); },
+        allergy: function (e) { setProf('allergy', e.target.value); }
+      },
+      save: function () { self.setState({ profOpen: false, profDone: '個人情報を登録しました。PFCの必要量に反映しています。' }); },
+      done: s.profDone || '', hasDone: !!s.profDone
+    };
     var bmr = 10 * PROF.w + 6.25 * PROF.h - 5 * PROF.age + (PROF.sex === '男性' ? 5 : -161);
-    var kcal = Math.round(bmr * PROF.act / 10) * 10;
-    var need = [Math.round(kcal * 0.15 / 4), Math.round(kcal * 0.25 / 9), Math.round(kcal * 0.6 / 4)];
+    var kcal = Math.round(bmr * PROF.act * G.f / 10) * 10;
+    var need = [Math.round(kcal * G.r[0] / 4), Math.round(kcal * G.r[1] / 9), Math.round(kcal * G.r[2] / 4)];
     var got = [28, 24, 150];
     var logAll = s.log || [];
     var lastLog = logAll[logAll.length - 1];
@@ -1743,7 +2053,7 @@ class Component extends DCLogic {
         : (pfcNames[lowI] + 'があと' + lowLeft + 'g。食べたいものに、ちょっと足せばOK。'));
     var pfc = {
       kcal: String(kcal).replace(/\B(?=(\d{3})+(?!\d))/g, ','),
-      basis: PROF.sex + '・' + PROF.age + '歳・' + PROF.h + 'cm・' + PROF.w + 'kg・活動量ふつう から算出',
+      basis: PROF.sex + '・' + PROF.age + '歳・' + PROF.h + 'cm・' + PROF.w + 'kg・活動量' + PROF.actLabel + ' から算出',
       rows: pfcRows,
       caption: ate ? '今日とった量（朝・昼・夜）' : '今日とった量（朝・昼）',
       note: pfcNote
@@ -1864,7 +2174,7 @@ class Component extends DCLogic {
       loc: loc,
       rc: rc,
       toWant: function () {
-        self.setState({ step: 'want', myWish: '', query: '', famPhase: 0, famN: 0, famChoice: null });
+        self.setState({ step: 'want', myWish: '', query: '', famPhase: 0, famN: 0, famChoice: null, pAct: null, pGenre: null, pStaple: null });
       },
 
       strip: strip,
@@ -1884,6 +2194,10 @@ class Component extends DCLogic {
         asking: s.famPhase === 0,
         answered: group && s.famPhase >= 1,
         chips: wantChips,
+        cats: wantCats,
+        canGo: canGo,
+        goBg: canGo ? '#B4430F' : '#C9BBA8',
+        goLabel: canGo ? (group ? 'これで伝える' : 'これで考えてもらう') : '1つ以上えらんでね',
         hint: group ? 'みんなの「食べたい」を集めて、ひとつの献立にまとめるよ。' : '今日はまだ野菜少なめ。でも、食べたいものから考えてOK。',
         affirm: /肉/.test(s.myWish || '') ? 'お肉いいね！' : 'いいね！'
       },
@@ -1922,6 +2236,7 @@ class Component extends DCLogic {
       sr: {
         affirm: v.affirm, line: v.line, dish: v.dish, msg: v.msg, memo: v.memo, concl: v.concl,
         isRamen: s.variant === 'ramen', notRamen: s.variant !== 'ramen',
+        cands: soloCands,
         adds: adds, l1: layer('a1'), l2: layer('a2'), l3: layer('a3'),
         why: soloWhy
       },
@@ -1951,6 +2266,9 @@ class Component extends DCLogic {
         reply: s.fb ? FB[s.fb].reply : ''
       },
 
+      quick: quick,
+      goal: goal,
+      prof: profUi,
       hist: { days: histDays },
       me: { learned: learned }
     };
